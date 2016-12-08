@@ -79,9 +79,17 @@
   "babel": {
     "presets": [
       "react-app"
+    ],
+    "plugins": [
+      ["transform-react-jsx", { "pragma": "h" }]
     ]
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "settings": {
+      "react": {
+        "pragma": "h"
+      }
+    }
   }
 }

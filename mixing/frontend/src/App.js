@@ -1,6 +1,5 @@
 import { Component, h } from 'preact';
 
-/** @jsx h */
 class App extends Component {
   render() {
     return (
