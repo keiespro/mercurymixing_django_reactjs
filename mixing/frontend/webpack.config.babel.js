@@ -1,26 +1,41 @@
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import autoprefixer from 'autoprefixer';
+import path from 'path';
 
 const ENV = process.env.NODE_ENV || 'development';
 
+const CSS_MAPS = ENV!=='production';
+
 module.exports = {
-	entry: './src/index.js',
+	entry: {
+		mixing: './src/index.js'
+	},
 
 	output: {
-		path: './build',
+		path: path.resolve(__dirname, '../static/build'),
 		publicPath: '/',
-		filename: 'bundle.js'
+		filename: '[name].js'
 	},
 
 	resolve: {
-		extensions: ['', '.jsx', '.js', '.json', '.less']
+		extensions: ['', '.jsx', '.js', '.json', '.scss'],
+		modulesDirectories: [
+			path.resolve(__dirname, 'src/lib'),
+			path.resolve(__dirname, 'node_modules'),
+			'node_modules'
+		],
+		alias: {
+			components: path.resolve(__dirname, 'src/components'),		// used for tests
+			style: path.resolve(__dirname, 'src/style'),
+			'react': 'preact-compat',
+			'react-dom': 'preact-compat'
+		}
 	},
 
 	module: {
 		preLoaders: [
-		 	{
+			{
 				test: /\.jsx?$/,
 				loader: 'eslint',
 				include: /src\//,
@@ -38,20 +53,25 @@ module.exports = {
 				loader: 'babel'
 			},
 			{
-				test: /\.(less|css)$/,
-				loader: ExtractTextPlugin.extract('css?sourceMap!postcss!less?sourceMap')
+				test: /\.s?css$/,
+				include: /src\/style\//,
+				loader: ExtractTextPlugin.extract('style', [
+					`css?sourceMap=${CSS_MAPS}`,
+					`postcss?sourceMap=${CSS_MAPS}`,
+					`sass?sourceMap=${CSS_MAPS}`
+				].join('!'))
 			},
 			{
 				test: /\.json$/,
 				loader: 'json'
 			},
 			{
-				test: /\.(xml|html|txt)$/,
+				test: /\.(xml|html|txt|md)$/,
 				loader: 'raw'
 			},
 			{
-				test: /\.(svg|woff|ttf|eot)(\?.*)?$/i,
-				loader: 'file-loader?name=assets/fonts/[name]_[hash:base64:5].[ext]'
+				test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif)(\?.*)?$/i,
+				loader: ENV==='production' ? 'file?name=[path][name]_[hash:base64:5].[ext]' : 'url'
 			}
 		]
 	},
@@ -62,11 +82,13 @@ module.exports = {
 
 	plugins: ([
 		new webpack.NoErrorsPlugin(),
-		new ExtractTextPlugin('style.css', { allChunks: true }),
-		new webpack.DefinePlugin({
-			'process.env.NODE_ENV': JSON.stringify(ENV)
+		new ExtractTextPlugin('[name].css', {
+			allChunks: true,
+			disable: ENV!=='production'
 		}),
-		new HtmlWebpackPlugin()
+		new webpack.DefinePlugin({
+			'process.env': JSON.stringify({ NODE_ENV: ENV })
+		})
 	]).concat(ENV === 'production' ? [
 		new webpack.optimize.DedupePlugin(),
 		new webpack.optimize.OccurenceOrderPlugin()
@@ -74,7 +96,16 @@ module.exports = {
 
 	stats: { colors: true },
 
-	devtool: ENV === 'production' ? 'source-map' : 'inline-source-map',
+	node: {
+		global: true,
+		process: false,
+		Buffer: false,
+		__filename: false,
+		__dirname: false,
+		setImmediate: false
+	},
+
+	devtool: ENV==='production' ? 'source-map' : 'cheap-module-eval-source-map',
 
 	devServer: {
 		port: process.env.PORT || 8080,
@@ -84,13 +115,12 @@ module.exports = {
 		publicPath: '/',
 		contentBase: './src',
 		historyApiFallback: true,
-		proxy: [
+		proxy: {
 			// OPTIONAL: proxy configuration:
-			// {
-			// 	path: '/optional-prefix/**',
+			// '/optional-prefix/**': { // path pattern to rewrite
 			// 	target: 'http://target-host.com',
-			// 	rewrite: req => { req.url = req.url.replace(/^\/[^\/]+\//, ''); }   // strip first path segment
+			// 	pathRewrite: path => path.replace(/^\/[^\/]+\//, '')   // strip first path segment
 			// }
-		]
+		}
 	}
 };

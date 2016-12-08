@@ -7,5 +7,5 @@
 .sass-cache
 local_settings.py
 node_modules/
-theme/static/build/
+mixing/static/build/
 /static
