@@ -56,14 +56,23 @@
       "react-app"
     ],
     "plugins": [
-      ["transform-decorators-legacy"],
-      ["transform-react-jsx", { "pragma": "h" }]
+      [
+        "transform-decorators-legacy"
+      ],
+      [
+        "transform-react-jsx",
+        {
+          "pragma": "h"
+        }
+      ]
     ]
   },
   "eslintConfig": {
     "extends": "react-app",
     "settings": {
-      "react": { "pragma": "h" }
+      "react": {
+        "pragma": "h"
+      }
     }
   }
 }
