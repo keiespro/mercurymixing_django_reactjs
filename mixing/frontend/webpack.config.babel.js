@@ -20,6 +20,11 @@ module.exports = {
 
 	module: {
 		preLoaders: [
+		 	{
+				test: /\.jsx?$/,
+				loader: 'eslint',
+				include: /src\//,
+			},
 			{
 				test: /\.jsx?$/,
 				exclude: /src\//,
@@ -75,6 +80,7 @@ module.exports = {
 		port: process.env.PORT || 8080,
 		host: '0.0.0.0',
 		colors: true,
+		stats: 'errors-only',
 		publicPath: '/',
 		contentBase: './src',
 		historyApiFallback: true,
