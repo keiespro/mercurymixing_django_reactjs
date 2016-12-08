@@ -9,7 +9,8 @@ const CSS_MAPS = ENV!=='production';
 
 module.exports = {
 	entry: {
-		mixing: './src/index.js'
+		mixing: './src/index.js',
+		classic: './src/classic/classic.js'
 	},
 
 	output: {

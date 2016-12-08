@@ -198,7 +198,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(PROJECT_ROOT, "theme", "templates")
+            os.path.join(PROJECT_ROOT, "mixing", "templates")
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -238,6 +238,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "mixing",
     "mezzanine.boot",
     "mezzanine.conf",
     "mezzanine.core",
