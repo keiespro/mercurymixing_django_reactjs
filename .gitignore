@@ -1,0 +1,11 @@
+*.pyc
+*.pyo
+*.db
+*.sublime-workspace
+.DS_Store
+.coverage
+.sass-cache
+local_settings.py
+node_modules/
+theme/static/build/
+/static
