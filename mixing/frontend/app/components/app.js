@@ -1,11 +1,10 @@
 import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
-import { bindActions } from '../util';
-import reduce from '../reducers';
+import { stateToProps, bindActions } from '../util';
 import * as actions from '../actions';
 import TodoItem from './todo-item';
 
-@connect(reduce, bindActions(actions))
+@connect(stateToProps('todos', 'projectName'), bindActions(actions))
 export default class App extends Component {
 	addTodos = () => {
 		let { text } = this.state;
@@ -21,7 +20,7 @@ export default class App extends Component {
 	render({ todos }, { text }) {
 		return (
 			<div id="app">
-				<form onSubmit={this.addTodos} action="javascript:">
+				<form onSubmit={this.addTodos} action="#">
 					<input value={text} onInput={this.linkState('text')} placeholder="New ToDo..." />
 				</form>
 				<ul>
