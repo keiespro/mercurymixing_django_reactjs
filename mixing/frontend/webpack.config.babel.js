@@ -11,8 +11,8 @@ const CSS_MAPS = ENV!=='production';
 
 module.exports = {
 	entry: {
-		mixing: './src/index.js',
-		classic: './src/classic/classic.js'
+		mixing: './app/index.js',
+		classic: './classic/index.js'
 	},
 
 	output: {
@@ -24,13 +24,13 @@ module.exports = {
 	resolve: {
 		extensions: ['', '.jsx', '.js', '.json', '.scss'],
 		modulesDirectories: [
-			path.resolve(__dirname, 'src/lib'),
+			path.resolve(__dirname, 'app/lib'),
 			path.resolve(__dirname, 'node_modules'),
 			'node_modules'
 		],
 		alias: {
-			components: path.resolve(__dirname, 'src/components'),		// used for tests
-			style: path.resolve(__dirname, 'src/style'),
+			components: path.resolve(__dirname, 'app/components'),		// used for tests
+			style: path.resolve(__dirname, 'style'),
 			'react': 'preact-compat',
 			'react-dom': 'preact-compat'
 		}
@@ -41,11 +41,11 @@ module.exports = {
 			{
 				test: /\.jsx?$/,
 				loader: 'eslint',
-				include: /src\//,
+				include: /(app|classic)\//,
 			},
 			{
 				test: /\.jsx?$/,
-				exclude: /src\//,
+				exclude: /(app|classic)\//,
 				loader: 'source-map'
 			}
 		],
@@ -57,7 +57,7 @@ module.exports = {
 			},
 			{
 				test: /\.s?css$/,
-				include: /src\/style\//,
+				include: /style\//,
 				loader: ExtractTextPlugin.extract('style', [
 					`css?sourceMap=${CSS_MAPS}`,
 					`postcss?sourceMap=${CSS_MAPS}`,

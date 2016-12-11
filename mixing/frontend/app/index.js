@@ -3,6 +3,7 @@ import { Provider } from 'preact-redux';
 import store from './store';
 import App from './components/app';
 
+// Hot reloading and dev tools
 if (module.hot) {
 	module.hot.accept();
 	require('preact/devtools');
