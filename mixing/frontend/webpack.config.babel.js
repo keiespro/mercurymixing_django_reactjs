@@ -5,6 +5,8 @@ import path from 'path';
 
 const ENV = process.env.NODE_ENV || 'development';
 
+const PORT = process.env.PORT || 8080;
+
 const CSS_MAPS = ENV!=='production';
 
 module.exports = {
@@ -15,7 +17,7 @@ module.exports = {
 
 	output: {
 		path: path.resolve(__dirname, '../static/build'),
-		publicPath: '/',
+		publicPath: ENV !== 'production' ? `http://localhost:${PORT}/` : '/',
 		filename: '[name].js'
 	},
 
@@ -109,7 +111,7 @@ module.exports = {
 	devtool: ENV==='production' ? 'source-map' : 'cheap-module-eval-source-map',
 
 	devServer: {
-		port: process.env.PORT || 8080,
+		port: PORT,
 		host: '0.0.0.0',
 		colors: true,
 		stats: 'errors-only',

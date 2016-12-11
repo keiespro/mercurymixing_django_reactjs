@@ -3,10 +3,15 @@ import { Provider } from 'preact-redux';
 import store from './store';
 import App from './components/app';
 
-if (module.hot) require('preact/devtools');
+if (module.hot) {
+	module.hot.accept();
+	require('preact/devtools');
+};
+
+const rootNode = document.querySelector('#root');
 
 render((
 	<Provider store={store}>
 		<App />
 	</Provider>
-), document.querySelector('#root'));
+), rootNode, rootNode.firstElementChild);
