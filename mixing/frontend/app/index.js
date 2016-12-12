@@ -1,7 +1,7 @@
 import { h, render } from 'preact';
 import { Provider } from 'preact-redux';
 import store from './store';
-import App from './components/app';
+import Project from './project/Project';
 
 // Hot reloading and dev tools
 if (module.hot) {
@@ -13,6 +13,6 @@ const rootNode = document.querySelector('#root');
 
 render((
 	<Provider store={store}>
-		<App />
+		<Project />
 	</Provider>
 ), rootNode, rootNode.firstElementChild);

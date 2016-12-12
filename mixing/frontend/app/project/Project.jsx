@@ -1,11 +1,11 @@
 import { h, Component } from 'preact';
 import { connect } from 'preact-redux';
 import { stateToProps, bindActions } from '../util';
-import * as actions from '../actions';
+import * as actions from './actions';
 import TodoItem from './todo-item';
 
-@connect(stateToProps('todos', 'projectName'), bindActions(actions))
-export default class App extends Component {
+@connect(stateToProps('todos'), bindActions(actions))
+export default class Project extends Component {
 	addTodos = () => {
 		let { text } = this.state;
 		this.setState({ text: '' });

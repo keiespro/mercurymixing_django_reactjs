@@ -1,20 +1,10 @@
+import project from './project/reducers';
 
 const ACTIONS = {
-	ADD_TODO: ({ todos, ...state }, { text }) => ({
-		todos: [...todos, {
-			id: Math.random().toString(36).substring(2),
-			text
-		}],
-		...state
-	}),
-
-	REMOVE_TODO: ({ todos, ...state }, { todo }) => ({
-		todos: todos.filter( i => i!==todo ),
-		...state
-	})
+	...project
 };
 
-export default (state, action) => {
+export default function rootReducer(state, action) {
 	if (action && ACTIONS[action.type]) {
 		return ACTIONS[action.type](state, action)
 	}
