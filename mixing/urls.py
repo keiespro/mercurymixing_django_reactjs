@@ -11,5 +11,6 @@ router.register(r"tracks", views.TrackViewSet)
 
 # Wire up our API using automatic URL routing.
 urlpatterns = [
-    url(r"^", include(router.urls)),
+    url(r"^projects/(?P<pk>[0-9]+)/$", views.ProjectDetail.as_view(), name="project_detail"),
+    url(r"^api/", include(router.urls)),
 ]

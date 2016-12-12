@@ -69,7 +69,7 @@ urlpatterns += [
     # CUSTOM URLS
     # -----------
 
-    url("api/", include("mixing.urls")),
+    url("^", include("mixing.urls")),
 
     # MEZZANINE'S URLS
     # ----------------

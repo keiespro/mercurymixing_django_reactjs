@@ -2,28 +2,32 @@ from __future__ import unicode_literals
 
 from rest_framework import serializers
 
-from .models import Song, Group, Track
+from .models import Project, Song, Group, Track
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ("title", "active", "id")
+        read_only_fields = fields
 
 
 class SongSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()
-
     class Meta:
         model = Song
         fields = ("project", "title", "id")
+        read_only_fields = ("id",)
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()
-
     class Meta:
         model = Group
         fields = ("song", "title", "id")
+        read_only_fields = ("id",)
 
 
 class TrackSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()
-
     class Meta:
         model = Track
         fields = ("group", "file", "id")
+        read_only_fields = ("id",)

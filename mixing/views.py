@@ -1,13 +1,58 @@
 from __future__ import unicode_literals
 
+import json
+
+from django.views import generic
+
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Project, Song, Group, Track
 from .permissions import ProjectIsActive
-from .serializers import SongSerializer, GroupSerializer, TrackSerializer
+from .serializers import (
+    ProjectSerializer, SongSerializer, GroupSerializer, TrackSerializer)
 
+
+#################
+# Regular Views #
+#################
+
+class ProjectDetail(generic.DetailView):
+    template_name = "mixing/project_detail.html"
+    context_object_name = "project"
+
+    def get_queryset(self):
+        """
+        Only search projects owned by the user.
+        """
+        return Project.objects.filter(owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        """
+        Add the context needed to prime Redux's state.
+        """
+        project = self.object
+        songs = project.songs.all()
+        groups = Group.objects.filter(song=songs)
+        tracks = Track.objects.filter(group=groups)
+
+        state = {
+            "project": ProjectSerializer(project).data,
+            "songs": SongSerializer(songs, many=True).data,
+            "groups": GroupSerializer(groups, many=True).data,
+            "tracks": TrackSerializer(tracks, many=True).data,
+        }
+
+        kwargs.update({
+            "state": json.dumps(state)
+        })
+        return super(ProjectDetail, self).get_context_data(**kwargs)
+
+
+#############
+# API Views #
+#############
 
 class ProjectRelatedViewSet(viewsets.ModelViewSet):
     """
