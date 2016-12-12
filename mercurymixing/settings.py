@@ -238,6 +238,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "rest_framework",
     "mixing",
     "mezzanine.boot",
     "mezzanine.conf",
@@ -310,6 +311,12 @@ FILEBROWSER_EXTENSIONS = {
 # Enable CSS minification besides concatenation by Django Compressor
 COMPRESS_CSS_FILTERS = ["compressor.filters.css_default.CssAbsoluteFilter",
                         "compressor.filters.cssmin.rCSSMinFilter"]
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
 
 ##################
 # LOCAL SETTINGS #

@@ -4,6 +4,8 @@ chardet==2.3.0
 Django==1.8.17
 django-cleanup==0.4.2
 django-contrib-comments==1.7.3
+django-debug-toolbar==1.6
+djangorestframework==3.5.3
 ecdsa==0.13
 Fabric==1.12.1
 filebrowser-safe==0.4.6
@@ -20,4 +22,5 @@ pytz==2016.10
 requests==2.11.1
 requests-oauthlib==0.7.0
 six==1.10.0
+sqlparse==0.2.2
 tzlocal==1.3
