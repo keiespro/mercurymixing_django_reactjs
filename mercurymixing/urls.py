@@ -66,6 +66,11 @@ urlpatterns += [
 
     # url("^$", mezzanine.blog.views.blog_post_list, name="home"),
 
+    # CUSTOM URLS
+    # -----------
+
+    url("api/", include("mixing.urls")),
+
     # MEZZANINE'S URLS
     # ----------------
     # ADD YOUR OWN URLPATTERNS *ABOVE* THE LINE BELOW.
