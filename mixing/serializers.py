@@ -5,6 +5,29 @@ from rest_framework import serializers
 from .models import Project, Song, Group, Track
 
 
+##########
+# Fields #
+##########
+
+class FileMetaDataField(serializers.FileField):
+    """
+    A FileField with a dictionary representation of its metadata.
+    """
+    def to_representation(self, value):
+        if not value:
+            return {}
+
+        return {
+            "name": value.name.split("/")[-1],
+            "size": value.size,
+            "url": getattr(value, "url", None),
+        }
+
+
+###############
+# Serializers #
+###############
+
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
@@ -27,6 +50,8 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class TrackSerializer(serializers.ModelSerializer):
+    file = FileMetaDataField()
+
     class Meta:
         model = Track
         fields = ("group", "file", "id")

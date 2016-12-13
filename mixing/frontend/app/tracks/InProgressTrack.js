@@ -1,12 +1,14 @@
 import { h } from 'preact';
 import { connect } from 'preact-redux';
-import { bindActions } from '../util';
+import { bindActions, fileSize } from '../util';
 import * as actions from './actions';
 
  function Track(props) {
+ 	const { track } = props;
+
 	return (
 		<section className="inprogress-track">
-			Uploading: {props.track.file.name}...
+			Uploading: {track.file.name} ({fileSize(track.file.size)})
 		</section>
 	)
 }
