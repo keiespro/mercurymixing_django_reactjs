@@ -10,5 +10,6 @@
 	<script>
 		window.initialState = JSON.parse('{{ state|escapejs }}')
 	</script>
+	<script src="https://cdn.polyfill.io/v2/polyfill.js?features=fetch"></script>
 	<script src="http://localhost:8080/mixing.js"></script>
 {% endblock extra_js %}
