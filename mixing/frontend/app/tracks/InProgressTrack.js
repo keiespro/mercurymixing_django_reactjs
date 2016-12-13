@@ -4,11 +4,9 @@ import { bindActions } from '../util';
 import * as actions from './actions';
 
  function Track(props) {
- 	const { track, removeTrack } = props;
 	return (
-		<section className="track">
-			Track: {track.file}
-			<button onClick={() => removeTrack(track)}>&times;</button>
+		<section className="inprogress-track">
+			Uploading: {props.track.file.name}...
 		</section>
 	)
 }

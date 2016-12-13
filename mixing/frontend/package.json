@@ -49,7 +49,9 @@
   "dependencies": {
     "js-cookie": "^2.1.3",
     "preact": "^7.1.0",
+    "preact-compat": "^3.9.4",
     "preact-redux": "^1.2.0",
+    "react-dropzone": "^3.7.3",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0"
   },
