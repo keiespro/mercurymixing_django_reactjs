@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block main %}
+	<div id="root">
+		{# React will be injected here #}
+	</div>
+{% endblock main %}
+
+{% block extra_js %}
+	<script>
+		window.initialState = JSON.parse('{{ state|escapejs }}')
+	</script>
+	<script src="http://localhost:8080/mixing.js"></script>
+{% endblock extra_js %}
