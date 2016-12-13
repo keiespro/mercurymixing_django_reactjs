@@ -1,4 +1,5 @@
-import { createStore } from 'redux';
+import { createStore, compose, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 
 const EMPTY = {
@@ -11,7 +12,8 @@ const EMPTY = {
 // window.initialState is populated by Django in mixing/project_detail.html
 const INITIAL = window.initialState || EMPTY;
 
-const ENHANCERS = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const ENHANCERS = composeEnhancers(applyMiddleware(thunk))
 
 export default function configureStore() {
 	const store = createStore(rootReducer, INITIAL, ENHANCERS);
