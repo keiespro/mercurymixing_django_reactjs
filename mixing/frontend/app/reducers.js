@@ -1,7 +1,9 @@
 import songs from './songs/reducers';
+import groups from './groups/reducers';
 
 const ACTIONS = {
-	...songs
+	...songs,
+	...groups
 };
 
 export default function rootReducer(state, action) {

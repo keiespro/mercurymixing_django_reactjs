@@ -20,8 +20,9 @@ const ACTIONS = {
 
 	[REMOVE_SONG_FAIL]: (state, { song, error }) => state,
 
-	[REMOVE_SONG_SUCCESS]: ({ songs, ...state }, { song }) => ({
+	[REMOVE_SONG_SUCCESS]: ({ songs, groups, ...state }, { song }) => ({
 		songs: songs.filter(s => s.id !== song.id),
+		groups: groups.filter(g => g.song !== song.id),
 		...state
 	})
 };

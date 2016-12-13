@@ -4,6 +4,7 @@ import { stateToProps, bindActions } from '../util';
 import * as actions from './actions';
 
 import Group from '../groups/Group';
+import AddGroupForm from '../groups/AddGroupForm';
 
 function Song(props) {
 	const { song, groups, removeSong } = props;
@@ -16,6 +17,7 @@ function Song(props) {
 			<section className="groups">
 				{songGroups.map(group => <Group key={group.id} group={group} />)}
 			</section>
+			<AddGroupForm song={song} />
 		</section>
 	);
 }
