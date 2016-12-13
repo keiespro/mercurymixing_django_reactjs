@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import json
 
 from django.views import generic
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
@@ -21,6 +23,15 @@ from .serializers import (
 class ProjectDetail(generic.DetailView):
     template_name = "mixing/project_detail.html"
     context_object_name = "project"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        """
+        Requrired to apply login_required.
+        Can be swapped by proper mixin in Django 1.9.
+        https://docs.djangoproject.com/en/1.9/topics/auth/default/#the-loginrequired-mixin
+        """
+        return super(ProjectDetail, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         """
