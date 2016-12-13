@@ -8,7 +8,7 @@ function AddSongForm(props) {
 
 	const addSong = (event) => {
 		const form = event.target;
-		props.addSong(form.title.value);
+		props.addSong(form.title.value, props.project);
 		form.reset();
 		event.preventDefault();
 	}

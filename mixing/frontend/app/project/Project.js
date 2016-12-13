@@ -13,8 +13,8 @@ function Project(props) {
 			<h1>Project: {project.title}</h1>
 			<section className="songs">
 				{songs.map(song => <Song key={song.id} song={song} />)}
-				<AddSongForm />
 			</section>
+			<AddSongForm project={project} />
 		</section>
 	);
 }

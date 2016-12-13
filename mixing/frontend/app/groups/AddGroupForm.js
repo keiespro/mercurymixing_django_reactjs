@@ -8,7 +8,7 @@ function AddGroupForm(props) {
 
 	const addGroup = (event) => {
 		const form = event.target;
-		props.addGroup(form.title.value, props.song.id);
+		props.addGroup(form.title.value, props.song);
 		form.reset();
 		event.preventDefault();
 	}

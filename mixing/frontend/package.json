@@ -47,7 +47,6 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
-    "fetchival": "^0.3.2",
     "js-cookie": "^2.1.3",
     "preact": "^7.1.0",
     "preact-redux": "^1.2.0",
