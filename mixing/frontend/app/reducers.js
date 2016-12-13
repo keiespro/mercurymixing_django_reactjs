@@ -1,7 +1,7 @@
-import project from './project/reducers';
+import songs from './songs/reducers';
 
 const ACTIONS = {
-	...project
+	...songs
 };
 
 export default function rootReducer(state, action) {
