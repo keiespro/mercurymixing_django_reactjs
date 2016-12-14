@@ -76,6 +76,16 @@
       "react-app",
       "plugin:import/recommended"
     ],
+    "rules": {
+      "indent": [
+        "error",
+        "tab",
+        {
+          "MemberExpression": 1
+        }
+      ],
+      "no-mixed-spaces-and-tabs": "error"
+    },
     "settings": {
       "react": {
         "pragma": "h"

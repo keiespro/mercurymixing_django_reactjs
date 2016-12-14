@@ -3,8 +3,8 @@ import { connect } from 'preact-redux';
 import { bindActions, fileSize } from '../util';
 import * as actions from './actions';
 
- function Track(props) {
- 	const { track, removeTrack } = props;
+function Track(props) {
+	const { track, removeTrack } = props;
 
 	const progress = () => {
 		if (track.canceled) return null;

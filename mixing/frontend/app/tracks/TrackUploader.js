@@ -7,8 +7,8 @@ import Dropzone from 'react-dropzone';
 
 function TrackUploader(props) {
 	const onDrop = (acceptedFiles, rejectedFiles) => {
-      acceptedFiles.forEach(file => props.addTrack(file, props.group));
-    }
+		acceptedFiles.forEach(file => props.addTrack(file, props.group));
+	}
 
 	return (
 		<Dropzone onDrop={onDrop}>
