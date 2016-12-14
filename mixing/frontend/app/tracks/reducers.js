@@ -10,7 +10,7 @@ export const REMOVE_TRACK_FAIL = 'REMOVE_TRACK_FAIL';
 
 const ACTIONS = {
 	[ADD_TRACK]: ({ tracks, ...state }, { obj, xhr }) => ({
-		tracks: [...tracks, {...obj, xhr}],
+		tracks: [...tracks, {...obj, xhr, uploading: true, progress: 0}],
 		...state
 	}),
 
@@ -44,6 +44,7 @@ const ACTIONS = {
 			if (track.key === obj.key) return {
 				...track,
 				...response,
+				xhr: null,
 				uploading: false
 			};
 			return track;
