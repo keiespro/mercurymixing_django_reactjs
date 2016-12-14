@@ -1,31 +1,44 @@
 import { h } from 'preact';
-import { connect } from 'preact-redux';
-import { bindActions, fileSize } from '../util';
-import * as actions from './actions';
+import { fileSize } from '../util';
 
-function Track(props) {
+export default function InProgressTrack(props) {
 	const { track } = props;
 
-	const determinate = () => (
-		<div className="determinate">
-			<progress value={track.progress} />
-			{track.progress > 0 ? `${(track.progress*100).toFixed(1)}%` : 'Waiting...'}
-		</div>
-	)
+	const className = () => {
+		if (track.canceled) return 'canceled-track';
+		return 'inprogress-track';
+	}
 
-	const indeterminate = () => (
-		<div className="indeterminate">
-			<progress />
-			Uploading...
-		</div>
-	)
+	const determinate = () => {
+		if (track.canceled) return ' ';
+		return (
+			<div className="determinate">
+				<progress value={track.progress} />
+				{track.progress > 0 ? `${(track.progress*100).toFixed(1)}%` : 'Waiting...'}
+			</div>
+		)
+	}
+
+	const indeterminate = () => {
+		if (track.canceled) return ' ';
+		return (
+			<div className="indeterminate">
+				<progress />
+				Uploading...
+			</div>
+		)
+	}
+
+	const cancelButton = () => {
+		if (track.canceled) return 'Canceled';
+		return <button onClick={() => track.xhr.abort()}>Cancel</button>
+	}
 
 	return (
-		<section className="inprogress-track">
+		<section className={className()}>
 			{track.file.name} ({fileSize(track.file.size)})
 			{track.progress === null ? indeterminate() : determinate()}
+			{cancelButton()}
 		</section>
 	)
 }
-
-export default connect(null, bindActions(actions))(Track);

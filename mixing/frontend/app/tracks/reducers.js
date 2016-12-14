@@ -1,5 +1,6 @@
 export const ADD_TRACK = 'ADD_TRACK';
 export const ADD_TRACK_PROGRESS = 'ADD_TRACK_PROGRESS';
+export const ADD_TRACK_ABORT = 'ADD_TRACK_ABORT';
 export const ADD_TRACK_SUCCESS = 'ADD_TRACK_SUCCESS';
 export const ADD_TRACK_FAIL = 'ADD_TRACK_FAIL';
 
@@ -8,8 +9,9 @@ export const REMOVE_TRACK_SUCCESS = 'REMOVE_TRACK_SUCCESS';
 export const REMOVE_TRACK_FAIL = 'REMOVE_TRACK_FAIL';
 
 const ACTIONS = {
-	[ADD_TRACK]: ({ tracks, ...state }, { obj }) => ({
-		tracks: [...tracks, obj],
+	[ADD_TRACK]: ({ tracks, ...state }, { obj, xhr }) => ({
+		// Add the new track to state, with xhr as a property
+		tracks: [...tracks, {...obj, xhr}],
 		...state
 	}),
 
@@ -19,6 +21,17 @@ const ACTIONS = {
 				let progress = null;
 				if (event.lengthComputable) progress = event.loaded / event.total;
 				return {...track, progress}
+			}
+			return track;
+		}),
+		...state
+	}),
+
+	[ADD_TRACK_ABORT]: ({ tracks, ...state }, { obj }) => ({
+		tracks: tracks.map(track => {
+			if (track.id === obj.id) {
+				const canceled = true;
+				return {...track, canceled}
 			}
 			return track;
 		}),
