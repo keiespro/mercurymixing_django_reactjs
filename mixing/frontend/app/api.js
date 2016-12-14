@@ -13,14 +13,18 @@ const apiBase = '/api/';
  * @param  {string} ACTION     Action to be dispatched before the request
  * @param  {string} SUCCESS    Action to be dispatched if the request succeeds
  * @param  {string} FAIL       Action to be dispatched if the request fails
+ * @param  {string} [PROGRESS] Optional action to be dispatched on xhr progress
  *
  * The ACTION reducer will receive `obj` and `xhr` as payload . `xhr` will be the ongoing
  * XMLHttpRequest.
  *
  * The SUCCESS and FAIL reducers will receive: `obj` and `response` as payload.
  * `response` will be the server response parsed as JSON.
+ *
+ * The PROGRESS reducer will receive `obj` and `event` as payload. `event` will be the
+ * ProgressEvent triggered by the request.
  */
-function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL) {
+function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL, PROGRESS) {
 	const data = new FormData();
 	const xhr = new XMLHttpRequest();
 
@@ -51,11 +55,16 @@ function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL) {
 		}
 	};
 
-	// Async error handler (connection error).
+	// Async error handler (connection error)
 	xhr.onerror = function apiError() {
 		const response = {details: 'Connection error'};
 		dispatch({type: FAIL, obj, response});
 	};
+
+	// Async progress handler (optional)
+	if (PROGRESS) xhr.upload.onprogress = function apiProgress(event) {
+		dispatch({type: PROGRESS, obj, event});
+	}
 
 	// Dispatch the pre-request action
 	dispatch({type: ACTION, obj, xhr});
@@ -73,25 +82,26 @@ function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL) {
  */
 export default function api(url) {
 	return {
-		get: function(obj, ACTION, SUCCESS, FAIL) {
+		// ...actions corresponds to all Redux actions accepted by _api()
+		get: function(obj, ...actions) {
 			if (!obj) obj = {};
-			return dispatch => _api(url, 'GET', obj, dispatch, ACTION, SUCCESS, FAIL)
+			return dispatch => _api(url, 'GET', obj, dispatch, ...actions)
 		},
 
-		patch: function(obj, ACTION, SUCCESS, FAIL) {
-			return dispatch => _api(url, 'PATCH', obj, dispatch, ACTION, SUCCESS, FAIL)
+		patch: function(obj, ...actions) {
+			return dispatch => _api(url, 'PATCH', obj, dispatch, ...actions)
 		},
 
-		post: function(obj, ACTION, SUCCESS, FAIL) {
-			return dispatch => _api(url, 'POST', obj, dispatch, ACTION, SUCCESS, FAIL)
+		post: function(obj, ...actions) {
+			return dispatch => _api(url, 'POST', obj, dispatch, ...actions)
 		},
 
-		put: function(obj, ACTION, SUCCESS, FAIL) {
-			return dispatch => _api(url, 'PUT', obj, dispatch, ACTION, SUCCESS, FAIL)
+		put: function(obj, ...actions) {
+			return dispatch => _api(url, 'PUT', obj, dispatch, ...actions)
 		},
 
-		delete: function(obj, ACTION, SUCCESS, FAIL) {
-			return dispatch => _api(url, 'DELETE', obj, dispatch, ACTION, SUCCESS, FAIL)
+		delete: function(obj, ...actions) {
+			return dispatch => _api(url, 'DELETE', obj, dispatch, ...actions)
 		}
 	}
 }
