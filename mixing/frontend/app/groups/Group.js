@@ -4,7 +4,6 @@ import { stateToProps, bindActions } from '../util';
 import * as actions from './actions';
 
 import Track from '../tracks/Track';
-import InProgressTrack from '../tracks/InProgressTrack';
 import TrackUploader from '../tracks/TrackUploader';
 
 function Group(props) {
@@ -16,12 +15,7 @@ function Group(props) {
 			<h3>Group: {group.title}</h3>
 			<button onClick={() => removeGroup(group)}>&times;</button>
 			<section className="tracks">
-				{groupTracks.map(track => {
-					if (track.uploading) {
-						return <InProgressTrack key={track.id} track={track} />
-					}
-					return <Track key={track.id} track={track} />
-				})}
+				{groupTracks.map(track => <Track key={track.id} track={track} />)}
 			</section>
 			<TrackUploader group={group} />
 		</section>
