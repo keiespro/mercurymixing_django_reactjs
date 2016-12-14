@@ -16,7 +16,7 @@ const REMOVE_ACTIONS = [
 
 export function addTrack(file, group) {
 	const track = {
-		id: getId(),
+		key: getId(),
 		uploading: true,
 		progress: 0,
 		group: group.id,

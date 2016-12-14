@@ -10,14 +10,13 @@ export const REMOVE_TRACK_FAIL = 'REMOVE_TRACK_FAIL';
 
 const ACTIONS = {
 	[ADD_TRACK]: ({ tracks, ...state }, { obj, xhr }) => ({
-		// Add the new track to state, with xhr as a property
 		tracks: [...tracks, {...obj, xhr}],
 		...state
 	}),
 
 	[ADD_TRACK_PROGRESS]: ({ tracks, ...state }, { obj, event }) => ({
 		tracks: tracks.map(track => {
-			if (track.id === obj.id) {
+			if (track.key === obj.key) {
 				let progress = null;
 				if (event.lengthComputable) progress = event.loaded / event.total;
 				return {...track, progress}
@@ -29,27 +28,28 @@ const ACTIONS = {
 
 	[ADD_TRACK_ABORT]: ({ tracks, ...state }, { obj }) => ({
 		tracks: tracks.map(track => {
-			if (track.id === obj.id) {
-				const canceled = true;
-				return {...track, canceled}
-			}
+			if (track.key === obj.key) return {...track, canceled: true};
 			return track;
 		}),
 		...state
 	}),
 
 	[ADD_TRACK_FAIL]: ({ tracks, ...state }, { obj, response }) => ({
-		tracks: tracks.filter(t => t.id !== obj.id),
+		tracks: tracks.filter(t => t.key !== obj.key),
 		...state
 	}),
 
-	[ADD_TRACK_SUCCESS]: ({ tracks, ...state }, { obj, response }) => {
-		const newTracks = tracks.filter(t => t.id !== obj.id);
-		return {
-			tracks: [...newTracks, response],
-			...state
-		}
-	},
+	[ADD_TRACK_SUCCESS]: ({ tracks, ...state }, { obj, response }) => ({
+		tracks: tracks.map(track => {
+			if (track.key === obj.key) return {
+				...track,
+				...response,
+				uploading: false
+			};
+			return track;
+		}),
+		...state
+	}),
 
 	[REMOVE_TRACK]: (state, { obj }) => state,
 
