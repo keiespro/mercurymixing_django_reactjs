@@ -1,5 +1,9 @@
 import Cookies from 'js-cookie';
 
+export function getKey() {
+	return Math.random().toString(36).substring(2);
+}
+
 const apiBase = '/api/';
 
 /**
@@ -8,28 +12,31 @@ const apiBase = '/api/';
  *
  * @param  {string} url        API endpoint URL
  * @param  {string} method     GET, POST, DELETE, etc...
- * @param  {Object} obj        Payload for the server and Redux actions
+ * @param  {Object} payload    Payload for the server and Redux actions
  * @param  {function} dispatch Redux's `dispatch` function
- * @param  {string} ACTION     Action to be dispatched before the request
- * @param  {string} SUCCESS    Action to be dispatched if the request succeeds
- * @param  {string} FAIL       Action to be dispatched if the request fails
- * @param  {string} [PROGRESS] Optional action to be dispatched on xhr progress
+ * @param  {string} [START]    Action to be dispatched before the request
+ * @param  {string} [SUCCESS]  Action to be dispatched if the request succeeds
+ * @param  {string} [ERROR]    Action to be dispatched if the request fails
+ * @param  {string} [PROGRESS] Action to be dispatched on xhr progress
  *
- * The ACTION reducer will receive `obj` and `xhr` as payload . `xhr` will be the ongoing
- * XMLHttpRequest.
+ * The START reducer will receive `payload` and `xhr` as payload . `xhr` will be the
+ * ongoing XMLHttpRequest.
  *
- * The SUCCESS and FAIL reducers will receive: `obj` and `response` as payload.
+ * The SUCCESS and ERROR reducers will receive: `payload` and `response` as action args.
  * `response` will be the server response parsed as JSON.
  *
- * The PROGRESS reducer will receive `obj` and `event` as payload. `event` will be the
- * progressEvent triggered by the request.
+ * The PROGRESS reducer will receive `payload` and `event` as action args. `event` will
+ * be the progressEvent triggered by the request.
  */
-function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL, PROGRESS) {
+function _api(url, method, payload, dispatch, START, SUCCESS, ERROR, PROGRESS) {
 	const data = new FormData();
 	const xhr = new XMLHttpRequest();
 
+	// Create a key for tracking this element in the UI (if not present already)
+	if (!('key' in payload)) payload.key = getKey();
+
 	// Create payload
-	Object.keys(obj).forEach(key => data.append(key, obj[key]));
+	Object.keys(payload).forEach(key => data.append(key, payload[key]));
 
 	// Remove leading slashes from the url
 	if (url.indexOf('/') === 0) url = url.slice(1);
@@ -49,25 +56,25 @@ function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL, PROGRESS) {
 	xhr.onload = function apiLoad() {
 		const response = JSON.parse(xhr.responseText || null);
 		if (xhr.status >= 200 && xhr.status < 300) {
-			dispatch({type: SUCCESS, obj, response });
+			if (SUCCESS) dispatch({type: SUCCESS, payload, response});
 		} else {
-			dispatch({type: FAIL, obj, response});
+			if (ERROR) dispatch({type: ERROR, payload, response});
 		}
 	};
 
 	// Async error handler (connection error)
-	xhr.onerror = function apiError() {
+	if (ERROR) xhr.onerror = function apiError() {
 		const response = {details: 'Connection error'};
-		dispatch({type: FAIL, obj, response});
+		dispatch({type: ERROR, payload, response});
 	};
 
 	// Async progress handler (optional)
 	if (PROGRESS) xhr.upload.onprogress = function apiProgress(event) {
-		dispatch({type: PROGRESS, obj, event});
+		dispatch({type: PROGRESS, payload, event});
 	}
 
 	// Dispatch the pre-request action
-	dispatch({type: ACTION, obj, xhr});
+	if (START) dispatch({type: START, payload, xhr});
 
 	// Send the request to the server
 	xhr.send(data);
@@ -83,25 +90,25 @@ function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL, PROGRESS) {
 export default function api(url) {
 	return {
 		// ...actions corresponds to all Redux actions accepted by _api()
-		get: function(obj, ...actions) {
-			if (!obj) obj = {};
-			return dispatch => _api(url, 'GET', obj, dispatch, ...actions)
+		get: function apiGet(payload, ...actions) {
+			if (!payload) payload = {};
+			return dispatch => _api(url, 'GET', payload, dispatch, ...actions)
 		},
 
-		patch: function(obj, ...actions) {
-			return dispatch => _api(url, 'PATCH', obj, dispatch, ...actions)
+		patch: function apiPatch(payload, ...actions) {
+			return dispatch => _api(url, 'PATCH', payload, dispatch, ...actions)
 		},
 
-		post: function(obj, ...actions) {
-			return dispatch => _api(url, 'POST', obj, dispatch, ...actions)
+		post: function apiPost(payload, ...actions) {
+			return dispatch => _api(url, 'POST', payload, dispatch, ...actions)
 		},
 
-		put: function(obj, ...actions) {
-			return dispatch => _api(url, 'PUT', obj, dispatch, ...actions)
+		put: function apiPut(payload, ...actions) {
+			return dispatch => _api(url, 'PUT', payload, dispatch, ...actions)
 		},
 
-		delete: function(obj, ...actions) {
-			return dispatch => _api(url, 'DELETE', obj, dispatch, ...actions)
+		delete: function apiDelete(payload, ...actions) {
+			return dispatch => _api(url, 'DELETE', payload, dispatch, ...actions)
 		}
 	}
 }

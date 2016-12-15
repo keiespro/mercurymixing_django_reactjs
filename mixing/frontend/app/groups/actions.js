@@ -1,8 +1,8 @@
 import api from '../api';
 
 import {
-	ADD_GROUP, ADD_GROUP_SUCCESS, ADD_GROUP_FAIL,
-	REMOVE_GROUP, REMOVE_GROUP_SUCCESS, REMOVE_GROUP_FAIL
+	GROUP_POST_START, GROUP_POST_SUCCESS, GROUP_POST_ERROR,
+	GROUP_DELETE_START, GROUP_DELETE_SUCCESS, GROUP_DELETE_ERROR
 } from './reducers';
 
 export function addGroup(title, song) {
@@ -11,10 +11,10 @@ export function addGroup(title, song) {
 		title
 	}
 	return api('groups')
-		.post(group, ADD_GROUP, ADD_GROUP_SUCCESS, ADD_GROUP_FAIL);
+		.post(group, GROUP_POST_START, GROUP_POST_SUCCESS, GROUP_POST_ERROR);
 }
 
 export function removeGroup(group) {
 	return api(`groups/${group.id}`)
-		.delete(group, REMOVE_GROUP, REMOVE_GROUP_SUCCESS, REMOVE_GROUP_FAIL);
+		.delete(group, GROUP_DELETE_START, GROUP_DELETE_SUCCESS, GROUP_DELETE_ERROR);
 }

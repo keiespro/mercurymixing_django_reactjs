@@ -1,33 +1,26 @@
 import api from '../api';
-import { getId } from '../util';
 
 import {
-	ADD_TRACK, ADD_TRACK_PROGRESS, ADD_TRACK_CANCEL, ADD_TRACK_SUCCESS, ADD_TRACK_FAIL,
-	REMOVE_TRACK, REMOVE_TRACK_SUCCESS, REMOVE_TRACK_FAIL
+	TRACK_POST_START, TRACK_POST_SUCCESS, TRACK_POST_ERROR,
+	TRACK_POST_PROGRESS, TRACK_POST_CANCEL,
+	TRACK_DELETE_START, TRACK_DELETE_SUCCESS, TRACK_DELETE_ERROR
 } from './reducers';
-
-const ADD_ACTIONS = [
-	ADD_TRACK, ADD_TRACK_SUCCESS, ADD_TRACK_FAIL, ADD_TRACK_PROGRESS
-]
-
-const REMOVE_ACTIONS = [
-	REMOVE_TRACK, REMOVE_TRACK_SUCCESS, REMOVE_TRACK_FAIL
-]
 
 export function addTrack(file, group) {
 	const track = {
-		key: getId(),
 		group: group.id,
 		file
 	}
-	return api('tracks').post(track, ...ADD_ACTIONS);
+	return api('tracks')
+		.post(track, TRACK_POST_START, TRACK_POST_SUCCESS, TRACK_POST_ERROR, TRACK_POST_PROGRESS);
 }
 
 export function cancelTrack(track) {
 	track.xhr.abort();
-	return {type: ADD_TRACK_CANCEL, obj: track}
+	return {type: TRACK_POST_CANCEL, payload: track}
 }
 
 export function removeTrack(track) {
-	return api(`tracks/${track.id}`).delete(track, ...REMOVE_ACTIONS);
+	return api(`tracks/${track.id}`)
+		.delete(track, TRACK_DELETE_START, TRACK_DELETE_SUCCESS, TRACK_DELETE_ERROR);
 }

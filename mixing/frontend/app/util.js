@@ -14,10 +14,6 @@ export function bindActions(actions) {
 	});
 }
 
-export function getId() {
-	return Math.random().toString(36).substring(2);
-}
-
 // http://stackoverflow.com/a/14919494
 export function fileSize(bytes) {
 	const thresh = 1000;

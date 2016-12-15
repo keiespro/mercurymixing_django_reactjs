@@ -1,30 +1,13 @@
-export const ADD_SONG = 'ADD_SONG';
-export const ADD_SONG_SUCCESS = 'ADD_SONG_SUCCESS';
-export const ADD_SONG_FAIL = 'ADD_SONG_FAIL';
+import reducerFactory from '../reducerFactory';
 
-export const REMOVE_SONG = 'REMOVE_SONG';
-export const REMOVE_SONG_SUCCESS = 'REMOVE_SONG_SUCCESS';
-export const REMOVE_SONG_FAIL = 'REMOVE_SONG_FAIL';
+export const SONG_POST_START = 'SONG_POST_START';
+export const SONG_POST_SUCCESS = 'SONG_POST_SUCCESS';
+export const SONG_POST_ERROR = 'SONG_POST_ERROR';
 
-const ACTIONS = {
-	[ADD_SONG]: (state, { obj }) => state,
+export const SONG_DELETE_START = 'SONG_DELETE_START';
+export const SONG_DELETE_SUCCESS = 'SONG_DELETE_SUCCESS';
+export const SONG_DELETE_ERROR = 'SONG_DELETE_ERROR';
 
-	[ADD_SONG_FAIL]: (state, { obj, response }) => state,
-
-	[ADD_SONG_SUCCESS]: ({ songs, ...state }, { obj, response }) => ({
-		songs: [...songs, response],
-		...state
-	}),
-
-	[REMOVE_SONG]: (state, { obj }) => state,
-
-	[REMOVE_SONG_FAIL]: (state, { obj, response }) => state,
-
-	[REMOVE_SONG_SUCCESS]: ({ songs, groups, ...state }, { obj, response }) => ({
-		songs: songs.filter(s => s.id !== obj.id),
-		groups: groups.filter(g => g.song !== obj.id),
-		...state
-	})
-};
+const ACTIONS = reducerFactory('songs', 'SONG');
 
 export default ACTIONS;

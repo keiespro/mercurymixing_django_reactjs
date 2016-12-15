@@ -1,29 +1,13 @@
-export const ADD_GROUP = 'ADD_GROUP';
-export const ADD_GROUP_SUCCESS = 'ADD_GROUP_SUCCESS';
-export const ADD_GROUP_FAIL = 'ADD_GROUP_FAIL';
+import reducerFactory from '../reducerFactory';
 
-export const REMOVE_GROUP = 'REMOVE_GROUP';
-export const REMOVE_GROUP_SUCCESS = 'REMOVE_GROUP_SUCCESS';
-export const REMOVE_GROUP_FAIL = 'REMOVE_GROUP_FAIL';
+export const GROUP_POST_START = 'GROUP_POST_START';
+export const GROUP_POST_SUCCESS = 'GROUP_POST_SUCCESS';
+export const GROUP_POST_ERROR = 'GROUP_POST_ERROR';
 
-const ACTIONS = {
-	[ADD_GROUP]: (state, { obj }) => state,
+export const GROUP_DELETE_START = 'GROUP_DELETE_START';
+export const GROUP_DELETE_SUCCESS = 'GROUP_DELETE_SUCCESS';
+export const GROUP_DELETE_ERROR = 'GROUP_DELETE_ERROR';
 
-	[ADD_GROUP_FAIL]: (state, { obj, response }) => state,
-
-	[ADD_GROUP_SUCCESS]: ({ groups, ...state }, { obj, response }) => ({
-		groups: [...groups, response],
-		...state
-	}),
-
-	[REMOVE_GROUP]: (state, { group }) => state,
-
-	[REMOVE_GROUP_FAIL]: (state, { obj, response }) => state,
-
-	[REMOVE_GROUP_SUCCESS]: ({ groups, ...state }, { obj, response }) => ({
-		groups: groups.filter(g => g.id !== obj.id),
-		...state
-	})
-};
+const ACTIONS = reducerFactory('groups', 'GROUP');
 
 export default ACTIONS;

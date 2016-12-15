@@ -35,7 +35,7 @@ function Track(props) {
 	}
 
 	// Render 'in progress' Track
-	if (track.uploading) return (
+	if (track.posting) return (
 		<div className={track.canceled ? 'canceled-track': 'inprogress-track'}>
 			{track.file.name} ({fileSize(track.file.size)})
 			{progress()}

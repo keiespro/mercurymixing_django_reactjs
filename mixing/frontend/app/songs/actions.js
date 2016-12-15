@@ -1,8 +1,8 @@
 import api from '../api';
 
 import {
-	ADD_SONG, ADD_SONG_SUCCESS, ADD_SONG_FAIL,
-	REMOVE_SONG, REMOVE_SONG_SUCCESS, REMOVE_SONG_FAIL
+	SONG_POST_START, SONG_POST_SUCCESS, SONG_POST_ERROR,
+	SONG_DELETE_START, SONG_DELETE_SUCCESS, SONG_DELETE_ERROR
 } from './reducers';
 
 export function addSong(title, project) {
@@ -11,10 +11,10 @@ export function addSong(title, project) {
 		title
 	}
 	return api('songs')
-		.post(song, ADD_SONG, ADD_SONG_SUCCESS, ADD_SONG_FAIL)
+		.post(song, SONG_POST_START, SONG_POST_SUCCESS, SONG_POST_ERROR);
 }
 
 export function removeSong(song) {
 	return api(`songs/${song.id}`)
-		.delete(song, REMOVE_SONG, REMOVE_SONG_SUCCESS, REMOVE_SONG_FAIL)
+		.delete(song, SONG_DELETE_START, SONG_DELETE_SUCCESS, SONG_DELETE_ERROR);
 }
