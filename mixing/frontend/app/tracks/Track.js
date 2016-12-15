@@ -4,7 +4,7 @@ import { bindActions, fileSize } from '../util';
 import * as actions from './actions';
 
 function Track(props) {
-	const { track, removeTrack } = props;
+	const { track, removeTrack, cancelTrack } = props;
 
 	const progress = () => {
 		if (track.canceled) return null;
@@ -31,7 +31,7 @@ function Track(props) {
 
 	const cancelButton = () => {
 		if (track.canceled) return <span>Canceled</span>;
-		return <button onClick={() => track.xhr.abort()}>Cancel</button>
+		return <button onClick={() => cancelTrack(track)}>Cancel</button>
 	}
 
 	// Render 'in progress' Track

@@ -14,7 +14,6 @@ const apiBase = '/api/';
  * @param  {string} SUCCESS    Action to be dispatched if the request succeeds
  * @param  {string} FAIL       Action to be dispatched if the request fails
  * @param  {string} [PROGRESS] Optional action to be dispatched on xhr progress
- * @param  {string} [ABORT]    Optional action to be dispatched on xhr abort
  *
  * The ACTION reducer will receive `obj` and `xhr` as payload . `xhr` will be the ongoing
  * XMLHttpRequest.
@@ -22,10 +21,10 @@ const apiBase = '/api/';
  * The SUCCESS and FAIL reducers will receive: `obj` and `response` as payload.
  * `response` will be the server response parsed as JSON.
  *
- * The PROGRESS and ABORT reducers will receive `obj` and `event` as payload. `event`
- * will be the progress or abort event triggered by the request.
+ * The PROGRESS reducer will receive `obj` and `event` as payload. `event` will be the
+ * progressEvent triggered by the request.
  */
-function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL, PROGRESS, ABORT) {
+function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL, PROGRESS) {
 	const data = new FormData();
 	const xhr = new XMLHttpRequest();
 
@@ -65,11 +64,6 @@ function _api(url, method, obj, dispatch, ACTION, SUCCESS, FAIL, PROGRESS, ABORT
 	// Async progress handler (optional)
 	if (PROGRESS) xhr.upload.onprogress = function apiProgress(event) {
 		dispatch({type: PROGRESS, obj, event});
-	}
-
-	// Async abort handler (optional)
-	if (ABORT) xhr.upload.onabort = function apiAbort(event) {
-		dispatch({type: ABORT, obj, event});
 	}
 
 	// Dispatch the pre-request action

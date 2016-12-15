@@ -1,6 +1,6 @@
 export const ADD_TRACK = 'ADD_TRACK';
 export const ADD_TRACK_PROGRESS = 'ADD_TRACK_PROGRESS';
-export const ADD_TRACK_ABORT = 'ADD_TRACK_ABORT';
+export const ADD_TRACK_CANCEL = 'ADD_TRACK_CANCEL';
 export const ADD_TRACK_SUCCESS = 'ADD_TRACK_SUCCESS';
 export const ADD_TRACK_FAIL = 'ADD_TRACK_FAIL';
 
@@ -26,7 +26,7 @@ const ACTIONS = {
 		...state
 	}),
 
-	[ADD_TRACK_ABORT]: ({ tracks, ...state }, { obj }) => ({
+	[ADD_TRACK_CANCEL]: ({ tracks, ...state }, { obj }) => ({
 		tracks: tracks.map(track => {
 			if (track.key === obj.key) return {...track, canceled: true};
 			return track;
