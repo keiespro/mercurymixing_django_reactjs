@@ -15,7 +15,7 @@ function Group(props) {
 			<h3>Group: {group.title}</h3>
 			<button onClick={() => removeGroup(group)}>&times;</button>
 			<section className="tracks">
-				{groupTracks.map(track => <Track key={track.key || track.id} track={track} />)}
+				{groupTracks.map(track => <Track key={track.key} track={track} />)}
 			</section>
 			<TrackUploader group={group} />
 		</section>

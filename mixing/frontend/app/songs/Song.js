@@ -15,7 +15,7 @@ function Song(props) {
 			<h2>Song: {song.title}</h2>
 			<button onClick={() => removeSong(song)}>&times;</button>
 			<section className="groups">
-				{songGroups.map(group => <Group key={group.id} group={group} />)}
+				{songGroups.map(group => <Group key={group.key} group={group} />)}
 			</section>
 			<AddGroupForm song={song} />
 		</section>
