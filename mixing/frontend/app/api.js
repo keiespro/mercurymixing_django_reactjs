@@ -17,26 +17,28 @@ const apiBase = '/api/';
  * @param  {string} [START]    Action to be dispatched before the request
  * @param  {string} [SUCCESS]  Action to be dispatched if the request succeeds
  * @param  {string} [ERROR]    Action to be dispatched if the request fails
- * @param  {string} [PROGRESS] Action to be dispatched on xhr progress
+ * @param  {string} [PROGRESS] Action to be dispatched on request progress
+ * @param  {string} [CANCEL]   Action to be dispatched on request abort
  *
- * The START reducer will receive `payload` and `xhr` as payload . `xhr` will be the
- * ongoing XMLHttpRequest.
+ * The START reducer will receive `payload` with an added key of `xhr`, which will be the
+ * ongoing XmlHttpRequest. It will also receive a `key`, which will be used to identify
+ * the request when other actions are dispatched.
  *
- * The SUCCESS and ERROR reducers will receive: `payload` and `response` as action args.
- * `response` will be the server response parsed as JSON.
+ * The SUCCESS and ERROR reducers will receive: `key` and `response` as action args.
+ * `response` will be the server response parsed as JSON (or null if no response).
  *
- * The PROGRESS reducer will receive `payload` and `event` as action args. `event` will
- * be the progressEvent triggered by the request.
+ * The PROGRESS reducer will receive `key` and `event` as action args. `event` will be
+ * the progressEvent triggered by the request.
+ *
+ * The CANCEL reducer will receive `key` as action args.
  */
-function _api(url, method, payload, dispatch, START, SUCCESS, ERROR, PROGRESS) {
+function _api(url, method, payload, dispatch, START, SUCCESS, ERROR, PROGRESS, CANCEL) {
 	const data = new FormData();
 	const xhr = new XMLHttpRequest();
-
-	// Create a key for tracking this element in the UI (if not present already)
-	if (!('key' in payload)) payload.key = getKey();
+	const key = payload.key || getKey();
 
 	// Create payload
-	Object.keys(payload).forEach(key => data.append(key, payload[key]));
+	Object.keys(payload).forEach(name => data.append(name, payload[name]));
 
 	// Remove leading slashes from the url
 	if (url.indexOf('/') === 0) url = url.slice(1);
@@ -56,25 +58,29 @@ function _api(url, method, payload, dispatch, START, SUCCESS, ERROR, PROGRESS) {
 	xhr.onload = function apiLoad() {
 		const response = JSON.parse(xhr.responseText || null);
 		if (xhr.status >= 200 && xhr.status < 300) {
-			if (SUCCESS) dispatch({type: SUCCESS, payload, response});
+			if (SUCCESS) dispatch({type: SUCCESS, key, response});
 		} else {
-			if (ERROR) dispatch({type: ERROR, payload, response});
+			if (ERROR) dispatch({type: ERROR, key, response});
 		}
 	};
 
 	// Async error handler (connection error)
 	if (ERROR) xhr.onerror = function apiError() {
-		const response = {details: 'Connection error'};
-		dispatch({type: ERROR, payload, response});
+		dispatch({type: ERROR, key, response: null});
 	};
 
-	// Async progress handler (optional)
+	// Async progress handler
 	if (PROGRESS) xhr.upload.onprogress = function apiProgress(event) {
-		dispatch({type: PROGRESS, payload, event});
+		dispatch({type: PROGRESS, key, event});
+	}
+
+	// Async cancel handler
+	if (CANCEL) xhr.onabort = function apiCancel() {
+		dispatch({type: CANCEL, key});
 	}
 
 	// Dispatch the pre-request action
-	if (START) dispatch({type: START, payload, xhr});
+	if (START) dispatch({type: START, payload: {...payload, xhr}, key});
 
 	// Send the request to the server
 	xhr.send(data);

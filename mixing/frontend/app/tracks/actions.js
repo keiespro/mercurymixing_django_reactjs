@@ -17,7 +17,7 @@ export function addTrack(file, group) {
 
 export function cancelTrack(track) {
 	track.xhr.abort();
-	return {type: TRACK_POST_CANCEL, payload: track}
+	return {type: TRACK_POST_CANCEL, key: track.key}
 }
 
 export function removeTrack(track) {
