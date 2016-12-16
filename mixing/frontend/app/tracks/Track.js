@@ -1,53 +1,61 @@
 import { h } from 'preact';
 import { connect } from 'preact-redux';
-import { bindActions, fileSize } from '../util';
+import { bindActions, fileSize, getClassName } from '../util';
 import * as actions from './actions';
 
 function Track(props) {
 	const { track, removeTrack, cancelTrack } = props;
+	const { request } = track;
 
-	const progress = () => {
-		if (track.canceled) return null;
+	const status = () => {
+		if (typeof request === 'undefined') return null;
+		if (request.error) return 'An error occurred';
+		if (request.canceled) return 'Canceled';
+		if (request.deleting) return 'Deleting...';
+		if (request.posting) {
+			if (request.progress === null) return (
+				<div className="indeterminate progress">
+					<progress />
+					<span>Uploading...</span>
+				</div>
+			)
 
-		// Track is uploading but we don't know the exact progress
-		if (track.progress === null) return (
-			<div className="indeterminate">
-				<progress />
-				<span className="status">Uploading...</span>
-			</div>
-		)
+			let status = 'Waiting...';
+			if (request.progress > 0) status = `${(request.progress*100).toFixed(1)}%`;
+			if (request.progress === 1) status = 'Saving...';
 
-		let status = 'Waiting';
-		if (track.progress > 0) status = `${(track.progress*100).toFixed(1)}%`;
+			return (
+				<div className="determinate progress">
+					<progress value={request.progress} />
+					<span>{status}</span>
+				</div>
+			)
+		}
+		return null;
+	}
 
-		// ...now we know the exact progress
+	const deleteButton = () => {
+		if (typeof request !== 'undefined') {
+			if (request.canceled || request.error || request.deleting) return null;
+			if (request.posting) return (
+				<button className="cancel" onClick={() => cancelTrack(track)}>
+					<span>Cancel</span>
+				</button>
+			)
+		}
 		return (
-			<div className="determinate">
-				<progress value={track.progress} />
-				<span className="status">{status}</span>
-			</div>
+			<button className="delete" onClick={() => removeTrack(track)}>
+				<span>Delete</span>
+			</button>
 		)
 	}
 
-	const cancelButton = () => {
-		if (track.canceled) return <span>Canceled</span>;
-		return <button onClick={() => cancelTrack(track)}>Cancel</button>
-	}
-
-	// Render 'in progress' Track
-	if (track.posting) return (
-		<div className={track.canceled ? 'canceled-track': 'inprogress-track'}>
-			{track.file.name} ({fileSize(track.file.size)})
-			{progress()}
-			{cancelButton()}
-		</div>
-	)
-
-	// ...or render the complete Track
 	return (
-		<div className="track">
-			{track.file.name} ({fileSize(track.file.size)})
-			<button onClick={() => removeTrack(track)}>&times;</button>
+		<div className={getClassName(track, 'track')}>
+			<div className="name">{track.file.name}</div>
+			<div className="size">{fileSize(track.file.size)}</div>
+			<div className="status">{status()}</div>
+			{deleteButton()}
 		</div>
 	)
 }

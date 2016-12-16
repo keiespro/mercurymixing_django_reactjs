@@ -1,7 +1,9 @@
 import { h } from 'preact';
 import { connect } from 'preact-redux';
-import { stateToProps, bindActions } from '../util';
 import * as actions from './actions';
+import {
+	stateToProps, bindActions, getClassName, getStatus, deleteButton
+} from '../util';
 
 import Group from '../groups/Group';
 import AddGroupForm from '../groups/AddGroupForm';
@@ -11,9 +13,10 @@ function Song(props) {
 	const songGroups = groups.filter(group => group.song === song.id);
 
 	return (
-		<section className="song">
+		<section className={getClassName(song, 'song')}>
 			<h2>Song: {song.title}</h2>
-			<button onClick={() => removeSong(song)}>&times;</button>
+			<div className="status">{getStatus(song)}</div>
+			{deleteButton(song, removeSong)}
 			<section className="groups">
 				{songGroups.map(group => <Group key={group.key} group={group} />)}
 			</section>

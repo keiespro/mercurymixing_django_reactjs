@@ -1,7 +1,9 @@
 import { h } from 'preact';
 import { connect } from 'preact-redux';
-import { stateToProps, bindActions } from '../util';
 import * as actions from './actions';
+import {
+	stateToProps, bindActions, getClassName, getStatus, deleteButton
+} from '../util';
 
 import Track from '../tracks/Track';
 import TrackUploader from '../tracks/TrackUploader';
@@ -11,9 +13,10 @@ function Group(props) {
 	const groupTracks = tracks.filter(track => track.group === group.id);
 
 	return (
-		<section className="group">
+		<section className={getClassName(group, 'group')}>
 			<h3>Group: {group.title}</h3>
-			<button onClick={() => removeGroup(group)}>&times;</button>
+			<div className="status">{getStatus(group)}</div>
+			{deleteButton(group, removeGroup)}
 			<section className="tracks">
 				{groupTracks.map(track => <Track key={track.key} track={track} />)}
 			</section>
