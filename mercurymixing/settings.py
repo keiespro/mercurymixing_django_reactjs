@@ -240,6 +240,7 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "rest_framework",
     "mixing",
+    "mixing.purchases",
     "mezzanine.boot",
     "mezzanine.conf",
     "mezzanine.core",
@@ -249,7 +250,7 @@ INSTALLED_APPS = (
     "mezzanine.forms",
     # "mezzanine.galleries",
     # "mezzanine.twitter",
-    # "mezzanine.accounts",
+    "mezzanine.accounts",
     # "mezzanine.mobile",
 )
 
@@ -320,6 +321,13 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     )
 }
+
+# Accounts
+ACCOUNTS_PROFILE_MODEL = "purchases.UserProfile"
+ACCOUNTS_VERIFICATION_REQUIRED = True
+ACCOUNTS_MIN_PASSWORD_LENGTH = 8
+ACCOUNTS_NO_USERNAME = True
+ACCOUNTS_PROFILE_FORM_EXCLUDE_FIELDS = ("track_credit",)
 
 ##################
 # LOCAL SETTINGS #
