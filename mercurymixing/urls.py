@@ -69,6 +69,7 @@ urlpatterns += [
     # CUSTOM URLS
     # -----------
 
+    url("^purchases/", include("mixing.purchases.urls", namespace="purchases")),
     url("^", include("mixing.urls")),
 
     # MEZZANINE'S URLS

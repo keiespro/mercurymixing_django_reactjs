@@ -34,6 +34,9 @@ class Purchase(TimeStamped):
     amount = models.DecimalField("Amount", max_digits=6, decimal_places=2)
     charge_details = models.TextField("Charge details", blank=True)
 
+    class Meta:
+        ordering = ["-created"]
+
     def __str__(self):
         return str(self.user)
 
