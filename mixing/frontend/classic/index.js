@@ -4,5 +4,10 @@
 
 import '../style/main.scss';
 
+import payAndSubmit from './stripe-payment.js';
+
 // Required for live reloading
 if (module.hot) module.hot.accept();
+
+// Attach to window to make accessible to inline scripts
+window.payAndSubmit = payAndSubmit;
