@@ -10,6 +10,4 @@ export const TRACK_DELETE_START = 'TRACK_DELETE_START';
 export const TRACK_DELETE_SUCCESS = 'TRACK_DELETE_SUCCESS';
 export const TRACK_DELETE_ERROR = 'TRACK_DELETE_ERROR';
 
-const REDUCERS = reducerFactory('tracks', 'TRACK');
-
-export default REDUCERS;
+export default reducerFactory('TRACK');

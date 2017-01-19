@@ -8,6 +8,4 @@ export const GROUP_DELETE_START = 'GROUP_DELETE_START';
 export const GROUP_DELETE_SUCCESS = 'GROUP_DELETE_SUCCESS';
 export const GROUP_DELETE_ERROR = 'GROUP_DELETE_ERROR';
 
-const ACTIONS = reducerFactory('groups', 'GROUP');
-
-export default ACTIONS;
+export default reducerFactory('GROUP');

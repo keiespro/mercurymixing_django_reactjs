@@ -8,6 +8,4 @@ export const SONG_DELETE_START = 'SONG_DELETE_START';
 export const SONG_DELETE_SUCCESS = 'SONG_DELETE_SUCCESS';
 export const SONG_DELETE_ERROR = 'SONG_DELETE_ERROR';
 
-const ACTIONS = reducerFactory('songs', 'SONG');
-
-export default ACTIONS;
+export default reducerFactory('SONG');

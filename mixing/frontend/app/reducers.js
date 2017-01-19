@@ -1,16 +1,14 @@
+import { combineReducers } from 'redux';
+
 import songs from './songs/reducers';
 import groups from './groups/reducers';
 import tracks from './tracks/reducers';
 
-const ACTIONS = {
-	...songs,
-	...groups,
-	...tracks
-};
+const dummyReducer = (state={}, action) => state;
 
-export default function rootReducer(state, action) {
-	if (action && ACTIONS[action.type]) {
-		return ACTIONS[action.type](state, action)
-	}
-	return state;
-}
+export default combineReducers({
+	songs,
+	groups,
+	tracks,
+	project: dummyReducer
+});
