@@ -11,14 +11,23 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
-from utils import status
+from utils import status, create_temp_file
 
+from mixing.models import Project, Song, Group, Track
 from .models import Purchase, UserProfile
 
 User = get_user_model()
 login_url = reverse("login")
 profile_url = reverse("profile_update")
 purchase_url = reverse("purchases:dashboard")
+
+
+def create_track(owner):
+    project = Project.objects.create(title="Project", owner=owner)
+    song = Song.objects.create(project=project, title="Song")
+    group = Group.objects.create(song=song, title="Group")
+    f = create_temp_file("temp-track.wav", "audio/wav")
+    return Track.objects.create(group=group, file=f)
 
 
 class PurchaseTests(TestCase):
@@ -77,3 +86,15 @@ class PurchaseTests(TestCase):
         self.assertRedirects(response, profile_url)  # Means successful submission
         self.user.profile.refresh_from_db()
         self.assertEquals(self.user.profile.track_credit, 0)
+
+    def test_tracks_modify_credit(self):
+        self.user.profile.track_credit = 10
+        self.user.profile.save()
+
+        # Creating tracks must decrease credit
+        track = create_track(owner=self.user)
+        self.assertEquals(self.user.profile.track_credit, 9)
+
+        # Deleting tracks must increase credit
+        track.delete()
+        self.assertEquals(self.user.profile.track_credit, 10)
