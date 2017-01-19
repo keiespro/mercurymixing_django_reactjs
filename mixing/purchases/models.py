@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import F
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
@@ -46,9 +47,9 @@ def increase_track_credit_on_purchase(sender, instance, created, **kwargs):
     """
     Increase the user's track credit on each new Purchase.
     """
-    profile = getattr(instance.user, "profile", None)
-    if created and profile:
-        profile.track_credit += instance.credits
+    profile, _ = UserProfile.objects.get_or_create(user=instance.user)
+    if created:
+        profile.track_credit = F("track_credit") + instance.credits
         profile.save()
 
 
@@ -57,10 +58,10 @@ def increase_track_credit_on_track_delete(sender, instance, **kwargs):
     """
     Increase the user's track credit when a Track is deleted.
     """
-    profile = getattr(instance.group.song.project.owner, "profile", None)
-    if profile:
-        profile.track_credit += 1
-        profile.save()
+    user = instance.group.song.project.owner
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile.track_credit = F("track_credit") + 1
+    profile.save()
 
 
 @receiver(post_save, sender="mixing.Track")
@@ -68,7 +69,8 @@ def decrease_track_credit_on_track_add(sender, instance, created, **kwargs):
     """
     Decrease the user's track credit when a Track is created.
     """
-    profile = getattr(instance.group.song.project.owner, "profile", None)
-    if created and profile and profile.track_credit > 0:
-        profile.track_credit -= 1
+    user = instance.group.song.project.owner
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    if created:
+        profile.track_credit = F("track_credit") - 1
         profile.save()

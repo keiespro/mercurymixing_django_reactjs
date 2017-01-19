@@ -93,8 +93,10 @@ class PurchaseTests(TestCase):
 
         # Creating tracks must decrease credit
         track = create_track(owner=self.user)
+        self.user.profile.refresh_from_db()
         self.assertEquals(self.user.profile.track_credit, 9)
 
         # Deleting tracks must increase credit
         track.delete()
+        self.user.profile.refresh_from_db()
         self.assertEquals(self.user.profile.track_credit, 10)
