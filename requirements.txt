@@ -9,12 +9,15 @@ djangorestframework==3.5.3
 ecdsa==0.13
 Fabric==1.12.1
 filebrowser-safe==0.4.6
+funcsigs==1.0.2
 future==0.15.2
 grappelli-safe==0.4.5
 html5lib==0.9999999
 Mezzanine==4.2.2
+mock==2.0.0
 oauthlib==2.0.0
 paramiko==1.17.2
+pbr==1.10.0
 Pillow==3.4.2
 psycopg2==2.6.2
 pycrypto==2.6.1

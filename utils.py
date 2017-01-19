@@ -22,3 +22,23 @@ def notify_exception(request, e):
         subject, message, fail_silently=True,
         html_message=reporter.get_traceback_html()
     )
+
+
+class StatusCodes(object):
+    """
+    Collection of common HTTP status codes, for readibility.
+    A subset of rest_framework.status.
+    """
+    HTTP_200_OK = 200
+    HTTP_301_MOVED_PERMANENTLY = 301
+    HTTP_307_TEMPORARY_REDIRECT = 307
+    HTTP_400_BAD_REQUEST = 400
+    HTTP_401_UNAUTHORIZED = 401
+    HTTP_403_FORBIDDEN = 403
+    HTTP_404_NOT_FOUND = 404
+    HTTP_500_INTERNAL_SERVER_ERROR = 500
+    HTTP_502_BAD_GATEWAY = 502
+    HTTP_503_SERVICE_UNAVAILABLE = 503
+
+
+status = StatusCodes()
