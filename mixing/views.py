@@ -4,6 +4,7 @@ import json
 
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.utils.decorators import method_decorator
 from django.views import generic
 
@@ -51,6 +52,7 @@ class ProjectDetail(generic.DetailView):
         groups = Group.objects.filter(song=songs)
         tracks = Track.objects.filter(group=groups)
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
+        purchase_url = reverse("purchases:dashboard")
 
         state = {
             "project": ProjectSerializer(project).data,
@@ -59,6 +61,7 @@ class ProjectDetail(generic.DetailView):
             "tracks": TrackSerializer(tracks, many=True).data,
             "profile": {
                 "trackCredit": profile.track_credit,
+                "purchaseUrl": purchase_url,
             }
         }
 
