@@ -9,7 +9,7 @@ function Track(props) {
 
 	const status = () => {
 		if (typeof request === 'undefined') return null;
-		if (request.error) return 'An error occurred';
+		if (request.error) return request.errorResponse.detail;
 		if (request.canceled) return 'Canceled';
 		if (request.deleting) return 'Deleting...';
 		if (request.posting) {

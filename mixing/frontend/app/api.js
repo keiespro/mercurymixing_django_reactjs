@@ -56,7 +56,12 @@ function _api(url, method, payload, dispatch, START, SUCCESS, ERROR, PROGRESS, C
 
 	// Async load handler. Determines if response was successful or failed.
 	xhr.onload = function apiLoad() {
-		const response = JSON.parse(xhr.responseText || null);
+		let response;
+		try {
+			response = JSON.parse(xhr.responseText || null);
+		} catch(e) {
+			response = {detail: 'Could not parse server response'};
+		}
 		if (xhr.status >= 200 && xhr.status < 300) {
 			if (SUCCESS) dispatch({type: SUCCESS, key, response});
 		} else {
