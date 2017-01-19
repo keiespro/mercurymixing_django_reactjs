@@ -1,7 +1,12 @@
+from __future__ import unicode_literals
+
 import sys
 import traceback
 
+from StringIO import StringIO
+
 from django.core import mail
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.views.debug import ExceptionReporter
 
 
@@ -22,6 +27,18 @@ def notify_exception(request, e):
         subject, message, fail_silently=True,
         html_message=reporter.get_traceback_html()
     )
+
+
+def create_temp_file(name="temp.txt", filetype="text"):
+    """
+    Create an in-memory temporary file.
+    Suitable to be attached as file data in tests.
+    """
+    temp_io = StringIO()
+    temp_io.write("Temporary File")
+    temp_file = InMemoryUploadedFile(temp_io, None, name, filetype, temp_io.len, None)
+    temp_file.seek(0)
+    return temp_file
 
 
 class StatusCodes(object):

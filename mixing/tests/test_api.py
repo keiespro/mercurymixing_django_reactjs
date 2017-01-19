@@ -1,17 +1,19 @@
 from __future__ import unicode_literals
 
-from StringIO import StringIO
-
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.urlresolvers import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from utils import create_temp_file
 from mixing.models import Project, Song, Group, Track
 
 User = get_user_model()
+
+
+def create_temp_track():
+    return create_temp_file("test-song.wav", "audio/wav")
 
 
 def create_song_dependencies(instance):
@@ -47,14 +49,6 @@ def create_track_dependencies(instance):
     instance.inactive_group = instance.inactive_song.groups.create(
         title="Inactive group"
     )
-
-
-def get_temporary_text_file():
-    temp = StringIO()
-    temp.write("foo")
-    text_file = InMemoryUploadedFile(temp, None, "foo.txt", "text", temp.len, None)
-    text_file.seek(0)
-    return text_file
 
 
 class SongAPITests(APITestCase):
@@ -399,19 +393,19 @@ class TrackAPITests(APITestCase):
         url = reverse("track-list")
 
         # User is anon
-        data = {"file": get_temporary_text_file(), "group": self.active_group.pk}
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # User is not owner
         self.client.force_authenticate(user=self.non_owner)
-        data = {"file": get_temporary_text_file(), "group": self.active_group.pk}
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # User is owner
         self.client.force_authenticate(user=self.owner)
-        data = {"file": get_temporary_text_file(), "group": self.active_group.pk}
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Track.objects.count(), 1)
@@ -420,19 +414,19 @@ class TrackAPITests(APITestCase):
         url = reverse("track-list")
 
         # User is anon
-        data = {"file": get_temporary_text_file(), "group": self.inactive_group.pk}
+        data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # User is not owner
         self.client.force_authenticate(user=self.non_owner)
-        data = {"file": get_temporary_text_file(), "group": self.inactive_group.pk}
+        data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # User is owner
         self.client.force_authenticate(user=self.owner)
-        data = {"file": get_temporary_text_file(), "group": self.inactive_group.pk}
+        data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -480,19 +474,19 @@ class TrackAPITests(APITestCase):
         url = reverse("track-detail", args=[track.pk])
 
         # User is anon
-        data = {"file": get_temporary_text_file(), "group": self.active_group.pk}
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # User is not owner
         self.client.force_authenticate(user=self.non_owner)
-        data = {"file": get_temporary_text_file(), "group": self.active_group.pk}
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # User is owner
         self.client.force_authenticate(user=self.owner)
-        data = {"file": get_temporary_text_file(), "group": self.active_group.pk}
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Track.objects.count(), 1)
@@ -502,19 +496,19 @@ class TrackAPITests(APITestCase):
         url = reverse("track-detail", args=[track.pk])
 
         # User is anon
-        data = {"file": get_temporary_text_file(), "group": self.inactive_group.pk}
+        data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # User is not owner
         self.client.force_authenticate(user=self.non_owner)
-        data = {"file": get_temporary_text_file(), "group": self.inactive_group.pk}
+        data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # User is owner
         self.client.force_authenticate(user=self.owner)
-        data = {"file": get_temporary_text_file(), "group": self.inactive_group.pk}
+        data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
