@@ -15,6 +15,8 @@ from .permissions import ProjectIsActive
 from .serializers import (
     ProjectSerializer, SongSerializer, GroupSerializer, TrackSerializer)
 
+from .purchases.models import UserProfile
+
 
 #################
 # Regular Views #
@@ -129,8 +131,10 @@ class TrackViewSet(ProjectRelatedViewSet):
 
     def perform_create(self, serializer):
         """
-        Limits POST to active Projects owned by the user.
+        Defines the rules that allow POSTing new Tracks.
         """
+
+        # User must be the owner and project must be active
         try:
             Project.objects.get(
                 songs__groups=self.request.data["group"],
@@ -139,4 +143,11 @@ class TrackViewSet(ProjectRelatedViewSet):
             )
         except (KeyError, Project.DoesNotExist):
             raise PermissionDenied
+
+        # User must have enough track credits
+        profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
+        if profile.track_credit <= 0:
+            detail = "You don't have enough credits to add a new track"
+            raise PermissionDenied(detail=detail, code="not_enough_credits")
+
         serializer.save()

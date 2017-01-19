@@ -397,14 +397,23 @@ class TrackAPITests(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # User is not owner
+        # User is not owner and has credit
+        self.non_owner.profile.track_credit = 1
+        self.non_owner.profile.save()
         self.client.force_authenticate(user=self.non_owner)
         data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # User is owner
+        # User is owner, but doesn't have credit
         self.client.force_authenticate(user=self.owner)
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is owner and has enought credit
+        self.owner.profile.track_credit = 1
+        self.owner.profile.save()
         data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -418,13 +427,17 @@ class TrackAPITests(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # User is not owner
+        # User is not owner and has credit
+        self.non_owner.profile.track_credit = 1
+        self.non_owner.profile.save()
         self.client.force_authenticate(user=self.non_owner)
         data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # User is owner
+        # User is owner and has credit
+        self.owner.profile.track_credit = 1
+        self.owner.profile.save()
         self.client.force_authenticate(user=self.owner)
         data = {"file": create_temp_track(), "group": self.inactive_group.pk}
         response = self.client.post(url, data)
