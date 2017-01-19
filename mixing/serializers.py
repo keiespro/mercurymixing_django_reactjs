@@ -13,15 +13,15 @@ class FileMetaDataField(serializers.FileField):
     """
     A FileField with a dictionary representation of its metadata.
     """
-    def to_representation(self, value):
-        if not value:
+    def to_representation(self, value=None):
+        try:
+            return {
+                "name": value.name.split("/")[-1],
+                "size": value.size,
+                "url": getattr(value, "url", None),
+            }
+        except (OSError, AttributeError):
             return {}
-
-        return {
-            "name": value.name.split("/")[-1],
-            "size": value.size,
-            "url": getattr(value, "url", None),
-        }
 
 
 ###############
