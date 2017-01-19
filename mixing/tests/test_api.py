@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from django.db import transaction
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -388,6 +389,10 @@ class GroupAPITests(APITestCase):
 class TrackAPITests(APITestCase):
     def setUp(self):
         create_track_dependencies(self)
+        self.owner.profile.track_credit = 1
+        self.owner.profile.save()
+        self.non_owner.profile.track_credit = 1
+        self.non_owner.profile.save()
 
     def test_create_track_on_active_group(self):
         url = reverse("track-list")
@@ -398,25 +403,25 @@ class TrackAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # User is not owner and has credit
-        self.non_owner.profile.track_credit = 1
-        self.non_owner.profile.save()
         self.client.force_authenticate(user=self.non_owner)
         data = {"file": create_temp_track(), "group": self.active_group.pk}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # User is owner, but doesn't have credit
+        # User is owner and has enough credit
         self.client.force_authenticate(user=self.owner)
         data = {"file": create_temp_track(), "group": self.active_group.pk}
-        response = self.client.post(url, data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-        # User is owner and has enought credit
-        self.owner.profile.track_credit = 1
-        self.owner.profile.save()
-        data = {"file": create_temp_track(), "group": self.active_group.pk}
-        response = self.client.post(url, data)
+        with transaction.atomic():
+            response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Track.objects.count(), 1)
+
+        # User is owner, but now doesn't have credit
+        self.client.force_authenticate(user=self.owner)
+        data = {"file": create_temp_track(), "group": self.active_group.pk}
+        with transaction.atomic():
+            response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Track.objects.count(), 1)
 
     def test_create_track_on_inactive_group(self):
