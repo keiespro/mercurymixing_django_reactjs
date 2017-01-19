@@ -8,6 +8,7 @@ const ENHANCERS = composeEnhancers(applyMiddleware(thunk))
 
 const EMPTY = {
 	project: {},
+	profile: {},
 	songs: [],
 	groups: [],
 	tracks: []

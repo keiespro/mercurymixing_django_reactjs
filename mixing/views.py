@@ -2,9 +2,10 @@ from __future__ import unicode_literals
 
 import json
 
-from django.views import generic
+from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views import generic
 
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
@@ -49,12 +50,16 @@ class ProjectDetail(generic.DetailView):
         songs = project.songs.all()
         groups = Group.objects.filter(song=songs)
         tracks = Track.objects.filter(group=groups)
+        profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
 
         state = {
             "project": ProjectSerializer(project).data,
             "songs": SongSerializer(songs, many=True).data,
             "groups": GroupSerializer(groups, many=True).data,
             "tracks": TrackSerializer(tracks, many=True).data,
+            "profile": {
+                "trackCredit": profile.track_credit,
+            }
         }
 
         kwargs.update({
@@ -146,8 +151,8 @@ class TrackViewSet(ProjectRelatedViewSet):
 
         # User must have enough track credits
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
-        if profile.track_credit <= 0:
-            detail = "You don't have enough credits to add a new track"
+        try:
+            serializer.save()
+        except IntegrityError:  # Raised by the post_save signal for Track
+            detail = "Not enough credits to add a new Track"
             raise PermissionDenied(detail=detail, code="not_enough_credits")
-
-        serializer.save()
