@@ -51,6 +51,22 @@ export function fileSize(bytes) {
 }
 
 /**
+ * Filter a collection by matching a key against a list of values
+ * @param  {Array}     collection The collection holding the items to be filtered
+ * @param  {string}    key        The key that will be used to filter the items
+ * @param  {...[any]}  values     A single or multiple values to compare the key against
+ * @return {Array}                The filtered collection
+ *
+ * @example
+ * animals = [{type: 'duck'}, {type: 'goose'}, {type: 'goose'}, {type: 'dog'}]
+ * filter(animals, 'type', 'duck', 'goose') // Returns 3 elements
+ * filter(animals, 'type', 'dog')           // Returns 1 element
+ */
+export function filter(collection, key, ...values) {
+	return collection.filter(item => values.indexOf(item[key]) > -1);
+}
+
+/**
  * Creates a class name based on the current request status
  * @param  {Object} obj.request A dictionary with the current request status
  * @param  {string} base        The base class name that will be extended
