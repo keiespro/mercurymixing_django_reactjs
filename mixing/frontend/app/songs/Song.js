@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { connect } from 'preact-redux';
 import * as actions from './actions';
 import {
-	stateToProps, bindActions, getClassName, getStatus, deleteButton
+	stateToProps, bindActions, getClassName, getStatus, deleteButton, filter
 } from '../util';
 
 import Group from '../groups/Group';
@@ -10,7 +10,7 @@ import AddGroupForm from '../groups/AddGroupForm';
 
 function Song(props) {
 	const { song, groups, removeSong } = props;
-	const songGroups = groups.filter(group => group.song === song.id);
+	const songGroups = filter(groups, 'song', song.id);
 
 	return (
 		<section className={getClassName(song, 'song')}>
