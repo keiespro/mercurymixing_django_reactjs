@@ -1,7 +1,7 @@
 import { filter } from '../util';
 
+import { SONG_DELETE_START, SONG_DELETE_ERROR } from '../songs/reducers';
 import { GROUP_DELETE_START, GROUP_DELETE_ERROR } from '../groups/reducers';
-
 import {
 	TRACK_POST_START, TRACK_POST_ERROR, TRACK_POST_CANCEL,
 	TRACK_DELETE_START, TRACK_DELETE_ERROR
@@ -14,21 +14,33 @@ import {
  * @return {Object}         New state with updated profile
  */
 export default function profileReducer (state={}, action) {
-	const { tracks, profile } = state
+	const { tracks, groups, profile } = state
 	let credit = profile.trackCredit;
-	let groupId;
+	let songId, groupIds, groupId, orphanedTracks;
 
 	switch (action.type) {
 
+	case SONG_DELETE_ERROR:
+		songId = action.payload.id;
+		groupIds = filter(groups, 'song', songId).map(g => g.id);
+		orphanedTracks = filter(tracks, 'group', ...groupIds);
+		credit -= orphanedTracks.length; break;
+
+	case SONG_DELETE_START:
+		songId = action.payload.id;
+		groupIds = filter(groups, 'song', songId).map(g => g.id);
+		orphanedTracks = filter(tracks, 'group', ...groupIds);
+		credit += orphanedTracks.length; break;
+
 	case GROUP_DELETE_ERROR:
 		groupId = action.payload.id;
-		credit -= filter(tracks, 'group', groupId).length;
-		break;
+		orphanedTracks = filter(tracks, 'group', groupId);
+		credit -= orphanedTracks.length; break;
 
 	case GROUP_DELETE_START:
 		groupId = action.payload.id;
-		credit += filter(tracks, 'group', groupId).length;
-		break;
+		orphanedTracks = filter(tracks, 'group', groupId);
+		credit += orphanedTracks.length; break;
 
 	case TRACK_POST_START:
 	case TRACK_DELETE_ERROR:
