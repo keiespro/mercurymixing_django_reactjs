@@ -1,37 +1,59 @@
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+# Mercury Mixing Frontend
 
-It was ejected and modified to use [preact](https://preactjs.com/) instead of React, following the [migration guide](https://github.com/developit/preact-www/blob/bf62aeb0e584ae392b5df86ba2c05858e069c2b6/content/guide/switching-to-preact.md). We are not using `preact-compat` (optional migration).
+Scripts and styles for the Mercury Mixing website. The frontend is divided in
+two main sections (corresponding to the generated bundles):
 
-Below you will find some information on how to perform common tasks.<br>
-You can find the most recent version of this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
+- `app/index.js`: The modern Preact (React) + Redux application that allows
+  users to upload their files for mixing. Generates `mixing.js` and
+  `mixing.css`.
 
-## Folder Structure
+- `classic/index.js`: The classic, site-wide scripts and styles for regular
+  site pages. Generates `classic.js` and `classic.css`.
 
-TODO
+## Development Workflow
 
-## Available Scripts
+**0. Install all npm dependencies when running for the first time**:
+`npm install`
 
-In the project directory, you can run:
+**1. Start a live-reload development server:**
 
-### `npm start`
+```sh
+PORT=8080 npm run dev
+```
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+> This is a full web server nicely suited to your project. Any time you make
+> changes within the `app`, `styles`, and `classic` directories, it will
+> rebuild and even refresh your browser.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+In the Django template, you only need to include two `<script>` tags pointing
+to `http://localhost:8080/classic.js` and `mixing.js`. Of course, this only
+works for development, where the Webpack server is running. Visit the Django
+server (usually running in port 8000) to develop the app.
 
-### `npm test`
+Keep in mind that Webpack Dev Server will automatically insert styles when
+you include the `<script>` tags, and hot code reloading will work for both
+styles and scripts.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](#running-tests) for more information.
+**2. Generate a production build in `/mixing/static/build`:**
 
-### `npm run build`
+```sh
+npm run build
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The resulting files are now in a path the Django's `collectstatic` can
+understand. The file names will be the same as before. You'll need to update
+the Django templates to fetch the scripts as any other static file, not from
+`localhost:8080`. For example:
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+```django
+<script src="{% static 'build/classic.js' %}"></script>
+<script src="{% static 'build/mixing.js' %}"></script>
+```
 
-See the section about [deployment](#deployment) for more information.
+You'll also want to include the styles in the `<head>` of the document, which
+will not be auto-inserted any more in production:
+
+```django
+<link rel="stylesheet" href="{% static 'build/classic.css' %}">
+<link rel="stylesheet" href="{% static 'build/mixing.css' %}">
+```

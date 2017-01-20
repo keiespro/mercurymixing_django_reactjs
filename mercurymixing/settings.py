@@ -198,7 +198,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(PROJECT_ROOT, "theme", "templates")
+            os.path.join(PROJECT_ROOT, "mixing", "templates")
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -238,6 +238,9 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "mixing",
+    "mixing.purchases",
     "mezzanine.boot",
     "mezzanine.conf",
     "mezzanine.core",
@@ -247,7 +250,7 @@ INSTALLED_APPS = (
     "mezzanine.forms",
     # "mezzanine.galleries",
     # "mezzanine.twitter",
-    # "mezzanine.accounts",
+    "mezzanine.accounts",
     # "mezzanine.mobile",
 )
 
@@ -309,6 +312,22 @@ FILEBROWSER_EXTENSIONS = {
 # Enable CSS minification besides concatenation by Django Compressor
 COMPRESS_CSS_FILTERS = ["compressor.filters.css_default.CssAbsoluteFilter",
                         "compressor.filters.cssmin.rCSSMinFilter"]
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+    )
+}
+
+# Accounts
+ACCOUNTS_PROFILE_MODEL = "purchases.UserProfile"
+ACCOUNTS_VERIFICATION_REQUIRED = True
+ACCOUNTS_MIN_PASSWORD_LENGTH = 8
+ACCOUNTS_NO_USERNAME = True
+ACCOUNTS_PROFILE_FORM_EXCLUDE_FIELDS = ("track_credit",)
 
 ##################
 # LOCAL SETTINGS #
