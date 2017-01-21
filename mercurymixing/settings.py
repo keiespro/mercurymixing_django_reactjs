@@ -238,6 +238,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "django_cleanup",
     "private_storage",
     "rest_framework",
     "mixing",
