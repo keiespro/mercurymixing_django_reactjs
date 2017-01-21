@@ -30,21 +30,38 @@ def create_private_files(owner):
 
 class PrivateFieldTests(TestCase):
 
-    def setUp(self):
-        self.staff_data = {"username": "staff", "password": "staff"}
-        self.staff = User.objects.create_user(**self.staff_data)
-        self.staff.is_staff = True
-        self.staff.save()
+    @classmethod
+    def setUpTestData(cls):
+        """
+        Runs once per class, not once per test method.
+        Make sure all objects defined here are NOT modified in test methods.
+        https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.TestCase.setUpTestData
+        """
+        cls.staff_data = {"username": "staff", "password": "staff"}
+        cls.staff = User.objects.create_user(**cls.staff_data)
+        cls.staff.is_staff = True
+        cls.staff.save()
 
-        self.non_owner_data = {"username": "other", "password": "other"}
-        self.non_owner = User.objects.create_user(**self.non_owner_data)
+        cls.non_owner_data = {"username": "other", "password": "other"}
+        cls.non_owner = User.objects.create_user(**cls.non_owner_data)
 
-        self.owner_data = {"username": "owner", "password": "owner"}
-        self.owner = User.objects.create_user(**self.owner_data)
-        self.owner.profile.track_credit = 1
-        self.owner.profile.save()
+        cls.owner_data = {"username": "owner", "password": "owner"}
+        cls.owner = User.objects.create_user(**cls.owner_data)
+        cls.owner.profile.track_credit = 1
+        cls.owner.profile.save()
 
-        self.track, self.comment, self.final = create_private_files(owner=self.owner)
+        cls.track, cls.comment, cls.final = create_private_files(owner=cls.owner)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Manually remove all models that create files, which will cause the
+        files on disk to be removed by django-cleanup.
+        This way running tests won't leave left-over files.
+        """
+        Track.objects.all().delete()
+        Comment.objects.all().delete()
+        FinalFile.objects.all().delete()
 
     def test_track_access(self):
         """

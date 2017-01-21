@@ -394,6 +394,14 @@ class TrackAPITests(APITestCase):
         self.non_owner.profile.track_credit = 1
         self.non_owner.profile.save()
 
+    def tearDown(self):
+        """
+        Manually remove the Tracks, which will cause the files on disk
+        to be removed by django-cleanup.
+        This way running tests won't leave left-over files.
+        """
+        Track.objects.all().delete()
+
     def test_create_track_on_active_group(self):
         url = reverse("track-list")
 
