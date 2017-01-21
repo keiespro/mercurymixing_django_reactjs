@@ -9,3 +9,4 @@ local_settings.py
 node_modules/
 mixing/static/build/
 /static
+/private_media

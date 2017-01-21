@@ -238,6 +238,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "private_storage",
     "rest_framework",
     "mixing",
     "mixing.purchases",
@@ -328,6 +329,8 @@ ACCOUNTS_VERIFICATION_REQUIRED = True
 ACCOUNTS_MIN_PASSWORD_LENGTH = 8
 ACCOUNTS_NO_USERNAME = True
 ACCOUNTS_PROFILE_FORM_EXCLUDE_FIELDS = ("track_credit",)
+
+PRIVATE_STORAGE_ROOT = os.path.join(PROJECT_ROOT, "private_media")
 
 ##################
 # LOCAL SETTINGS #

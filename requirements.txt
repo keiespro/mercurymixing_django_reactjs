@@ -5,6 +5,7 @@ Django==1.8.17
 django-cleanup==0.4.2
 django-contrib-comments==1.7.3
 django-debug-toolbar==1.6
+django-private-storage==1.0.2
 djangorestframework==3.5.3
 ecdsa==0.13
 Fabric==1.12.1

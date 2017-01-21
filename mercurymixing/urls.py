@@ -69,6 +69,7 @@ urlpatterns += [
     # CUSTOM URLS
     # -----------
 
+    url("^private/", include("private_storage.urls")),
     url("^purchases/", include("mixing.purchases.urls", namespace="purchases")),
     url("^", include("mixing.urls")),
 
