@@ -1,13 +1,28 @@
 from __future__ import unicode_literals
 
+import re
 import sys
 import traceback
+import unicodedata
 
 from StringIO import StringIO
 
 from django.core import mail
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.safestring import mark_safe
+from django.utils.text import force_text
 from django.views.debug import ExceptionReporter
+
+
+def slugify_filename(value):
+    """
+    Based on django.utils.text.slugify, but allows dots and always enforces ASCII.
+    """
+    value = force_text(value)
+    value = unicodedata.normalize("NFKD", value)
+    value = value.encode("ascii", "ignore").decode("ascii")
+    value = re.sub(r"[^\w\s\.-]", "", value).strip().lower()
+    return mark_safe(re.sub(r"[-\s]+", "-", value))
 
 
 def notify_exception(request, e):

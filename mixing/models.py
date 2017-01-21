@@ -4,8 +4,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
+from private_storage.fields import PrivateFileField
+
 from mezzanine.conf import settings
 from mezzanine.core.models import TimeStamped
+
+from .permissions import (
+    private_comment_path, private_final_path, private_track_path)
 
 
 @python_2_unicode_compatible
@@ -68,8 +73,8 @@ class Comment(TimeStamped):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="comments", verbose_name="Author")
     content = models.TextField("Content")
-    attachment = models.FileField(
-        "Attachement", max_length=255, blank=True, upload_to="comments")
+    attachment = PrivateFileField(
+        "Attachement", max_length=255, blank=True, upload_to=private_comment_path)
 
     class Meta:
         verbose_name = "comment"
@@ -88,7 +93,8 @@ class FinalFile(TimeStamped):
     """
     project = models.ForeignKey(Project, related_name="final_files")
     notes = models.TextField("Notes", blank=True)
-    attachment = models.FileField("Attachement", max_length=255, upload_to="finals")
+    attachment = PrivateFileField(
+        "Attachement", max_length=255, upload_to=private_final_path)
 
     class Meta:
         verbose_name = "final file"
@@ -141,7 +147,7 @@ class Track(models.Model):
     Tracks are always part of a Group.
     """
     group = models.ForeignKey(Group, related_name="tracks")
-    file = models.FileField("File", max_length=255, upload_to="tracks")
+    file = PrivateFileField("File", max_length=255, upload_to=private_track_path)
 
     class Meta:
         verbose_name = "track"

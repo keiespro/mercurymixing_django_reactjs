@@ -331,6 +331,7 @@ ACCOUNTS_NO_USERNAME = True
 ACCOUNTS_PROFILE_FORM_EXCLUDE_FIELDS = ("track_credit",)
 
 PRIVATE_STORAGE_ROOT = os.path.join(PROJECT_ROOT, "private_media")
+PRIVATE_STORAGE_AUTH_FUNCTION = "mixing.permissions.allow_owner_and_staff"
 
 ##################
 # LOCAL SETTINGS #
