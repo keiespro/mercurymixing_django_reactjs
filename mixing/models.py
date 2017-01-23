@@ -79,6 +79,7 @@ class Comment(TimeStamped):
     class Meta:
         verbose_name = "comment"
         verbose_name_plural = "comments"
+        ordering = ["created"]
 
     def __str__(self):
         # Remove newlines and return the 20 first chars

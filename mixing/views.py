@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 import json
 
@@ -12,10 +12,13 @@ from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Project, Song, Group, Track
+from utils import get_user_display
+
+from .models import Project, Song, Group, Track, Comment
 from .permissions import ProjectIsActive
 from .serializers import (
-    ProjectSerializer, SongSerializer, GroupSerializer, TrackSerializer)
+    ProjectSerializer, SongSerializer, GroupSerializer, TrackSerializer,
+    CommentSerializer)
 
 from .purchases.models import UserProfile
 
@@ -49,6 +52,7 @@ class ProjectDetail(generic.DetailView):
         """
         project = self.object
         songs = project.songs.all()
+        comments = project.comments.all()
         groups = Group.objects.filter(song=songs)
         tracks = Track.objects.filter(group=groups)
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
@@ -59,7 +63,9 @@ class ProjectDetail(generic.DetailView):
             "songs": SongSerializer(songs, many=True).data,
             "groups": GroupSerializer(groups, many=True).data,
             "tracks": TrackSerializer(tracks, many=True).data,
+            "comments": CommentSerializer(comments, many=True).data,
             "profile": {
+                "user": get_user_display(project.owner),
                 "trackCredit": profile.track_credit,
                 "purchaseUrl": purchase_url,
             }
@@ -159,3 +165,23 @@ class TrackViewSet(ProjectRelatedViewSet):
         except IntegrityError:  # Raised by the post_save signal for Track
             detail = "Not enough credits to add a new Track"
             raise PermissionDenied(detail=detail, code="not_enough_credits")
+
+
+class CommentViewSet(ProjectRelatedViewSet):
+    queryset = Comment.objects.all()
+    owner_lookup = "project__owner"
+    serializer_class = CommentSerializer
+
+    def perform_create(self, serializer):
+        """
+        Limits POST to active Projects owned by the user.
+        """
+        try:
+            Project.objects.get(
+                id=self.request.data["project"],
+                owner=self.request.user,
+                active=True
+            )
+        except (KeyError, Project.DoesNotExist):
+            raise PermissionDenied
+        serializer.save(author=self.request.user)

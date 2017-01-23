@@ -14,6 +14,17 @@ from django.utils.text import force_text
 from django.views.debug import ExceptionReporter
 
 
+def get_user_display(user):
+    """
+    Friendly representation of user data.
+    Returns the first name, last name, and username (if all available)
+    or just the username.
+    """
+    if user.first_name and user.last_name:
+        return "{u.first_name} {u.last_name} ({u.username})".format(u=user)
+    return user.username
+
+
 def slugify_filename(value):
     """
     Based on django.utils.text.slugify, but allows dots and always enforces ASCII.

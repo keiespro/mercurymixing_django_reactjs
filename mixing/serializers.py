@@ -1,8 +1,10 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 from rest_framework import serializers
 
-from .models import Project, Song, Group, Track
+from utils import get_user_display
+
+from .models import Project, Song, Group, Track, Comment
 
 
 ##########
@@ -20,7 +22,7 @@ class FileMetaDataField(serializers.FileField):
                 "size": value.size,
                 "url": getattr(value, "url", None),
             }
-        except (OSError, AttributeError):
+        except (OSError, AttributeError, ValueError):
             return {}
 
 
@@ -56,3 +58,16 @@ class TrackSerializer(serializers.ModelSerializer):
         model = Track
         fields = ("group", "file", "id")
         read_only_fields = ("id",)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+    attachment = FileMetaDataField(required=False)
+
+    class Meta:
+        model = Comment
+        fields = ("id", "project", "author", "content", "attachment", "created")
+        read_only_fields = ("id", "author", "created")
+
+    def get_author(self, comment):
+        return get_user_display(comment.author)

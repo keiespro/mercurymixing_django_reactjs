@@ -8,6 +8,7 @@ router = routers.DefaultRouter()
 router.register(r"songs", views.SongViewSet)
 router.register(r"groups", views.GroupViewSet)
 router.register(r"tracks", views.TrackViewSet)
+router.register(r"comments", views.CommentViewSet)
 
 # Wire up our API using automatic URL routing.
 urlpatterns = [

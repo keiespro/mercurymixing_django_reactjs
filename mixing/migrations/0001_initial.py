@@ -24,6 +24,7 @@ class Migration(migrations.Migration):
                 ('author', models.ForeignKey(related_name='comments', verbose_name='Author', to=settings.AUTH_USER_MODEL)),
             ],
             options={
+                'ordering': ['created'],
                 'verbose_name': 'comment',
                 'verbose_name_plural': 'comments',
             },
