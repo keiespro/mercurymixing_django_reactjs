@@ -51,6 +51,26 @@ export function fileSize(bytes) {
 }
 
 /**
+ * Get a deeply nested property from and object, with fallback
+ * @param  {Object} obj      The object that will be searched
+ * @param  {String} path     The dot-separated path to the nested property
+ * @param  {any}    fallback Fallback value if the nested property is not found
+ * @return {any}             The nested property value or fallback
+ */
+export function deepGet(obj, path, fallback) {
+	let current = obj;
+	for (let key of path.split('.')) {
+		if (current && key in current) {
+			current = current[key];
+		} else {
+			current = fallback;
+			break;
+		}
+	}
+	return current;
+}
+
+/**
  * Filter a collection by matching a key against a list of values
  * @param  {Array}     collection The collection holding the items to be filtered
  * @param  {string}    key        The key that will be used to filter the items
@@ -87,8 +107,9 @@ export function getClassName (obj, base) {
  * @return {string}             The resulting message based on the request status
  */
 export function getStatus (obj) {
-	if (!obj.request) return null;
-	if (obj.request.error) return 'An error occurred';
+	if (typeof obj.request === 'undefined') return null;
+	if (obj.request.error) return deepGet(
+		obj, 'request.errorResponse.detail', 'An error occurred');
 	if (obj.request.canceled) return 'Canceled';
 	if (obj.request.deleting) return 'Deleting...';
 	if (obj.request.posting) return 'Creating...';
@@ -103,10 +124,11 @@ export function getStatus (obj) {
  * @return {jsx}                 The button that will fire the remove action
  */
 export function deleteButton (obj, removeFunc) {
-	const { request } = obj;
-	if (typeof request !== 'undefined') {
-		if (request.canceled || request.error || request.deleting) return null;
-	}
+	const request = obj.request || {};
+	const nonDeletable = ['error', 'canceled', 'deleting', 'posting'];
+	const isTruthy = key => !!request[key];
+
+	if (nonDeletable.some(isTruthy)) return null;
 	return (
 		<button className="delete" onClick={() => removeFunc(obj)}>
 			<span>Delete</span>

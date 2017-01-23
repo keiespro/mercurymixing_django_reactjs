@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { connect } from 'preact-redux';
-import { bindActions, fileSize, getClassName } from '../util';
+import { bindActions, fileSize, getClassName, deepGet } from '../util';
 import * as actions from './actions';
 
 function Track(props) {
@@ -9,7 +9,8 @@ function Track(props) {
 
 	const status = () => {
 		if (typeof request === 'undefined') return null;
-		if (request.error) return request.errorResponse.detail;
+		if (request.error) return deepGet(
+			request, 'errorResponse.detail', 'An error occurred');
 		if (request.canceled) return 'Canceled';
 		if (request.deleting) return 'Deleting...';
 		if (request.posting) {
