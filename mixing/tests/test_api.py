@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from utils import create_temp_file
-from mixing.models import Project, Song, Group, Track
+from mixing.models import Project, Song, Group, Track, Comment
 
 User = get_user_model()
 
@@ -582,3 +582,203 @@ class TrackAPITests(APITestCase):
         # Nothing should have changed
         self.assertEqual(Track.objects.count(), 1)
         self.assertEqual(Track.objects.get().file.name, "file1.wav")
+
+
+class CommentAPITests(APITestCase):
+    def setUp(self):
+        create_song_dependencies(self)
+
+    def tearDown(self):
+        """
+        Manually remove the Comments, which will cause the files on disk
+        to be removed by django-cleanup.
+        This way running tests won't leave left-over files.
+        """
+        Comment.objects.all().delete()
+
+    def test_create_comment_on_active_project(self):
+        url = reverse("comment-list")
+        data = {
+            "content": "Test Comment",
+            "attachment": create_temp_file("test.txt", "text/plain"),
+            "project": self.active_project.pk,
+        }
+
+        # User is anon
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        data["attachment"].seek(0)
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is owner
+        data["attachment"].seek(0)
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(Comment.objects.get().content, "Test Comment")
+        self.assertTrue(Comment.objects.get().attachment.name.endswith("test.txt"))
+
+    def test_create_comment_on_inactive_project(self):
+        url = reverse("comment-list")
+        data = {"content": "Test Comment", "project": self.inactive_project.pk}
+
+        # User is anon
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is owner
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # No comments should have been created
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_get_comment_on_active_project(self):
+        comment = self.active_project.comments.create(
+            content="Existing comment",
+            author=self.owner
+        )
+        url = reverse("comment-detail", args=[comment.pk])
+
+        # User is anon
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # User is owner
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_comment_on_inactive_project(self):
+        comment = self.inactive_project.comments.create(
+            content="Existing comment",
+            author=self.owner
+        )
+        url = reverse("comment-detail", args=[comment.pk])
+
+        # User is anon
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # User is owner
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_comment_on_active_project(self):
+        comment = self.active_project.comments.create(
+            content="Existing comment",
+            author=self.owner
+        )
+        url = reverse("comment-detail", args=[comment.pk])
+        data = {"content": "New content", "project": self.active_project.pk}
+
+        # User is anon
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # User is owner
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(Comment.objects.get().content, "New content")
+
+    def test_update_comment_on_inactive_project(self):
+        comment = self.inactive_project.comments.create(
+            content="Existing comment",
+            author=self.owner
+        )
+        url = reverse("comment-detail", args=[comment.pk])
+        data = {"content": "New content", "project": self.inactive_project.pk}
+
+        # User is anon
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # User is owner
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Nothing should have changed
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(Comment.objects.get().content, "Existing comment")
+
+    def test_delete_comment_on_active_project(self):
+        comment = self.active_project.comments.create(
+            content="Existing comment",
+            author=self.owner
+        )
+        url = reverse("comment-detail", args=[comment.pk])
+
+        # User is anon
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # User is owner
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Comment.objects.count(), 0)
+
+    def test_delete_comment_on_inactive_project(self):
+        comment = self.inactive_project.comments.create(
+            content="Existing comment",
+            author=self.owner
+        )
+        url = reverse("comment-detail", args=[comment.pk])
+
+        # User is anon
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # User is not owner
+        self.client.force_authenticate(user=self.non_owner)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # User is owner
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Nothing should have changed
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(Comment.objects.get().content, "Existing comment")
