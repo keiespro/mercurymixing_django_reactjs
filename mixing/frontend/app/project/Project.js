@@ -4,9 +4,11 @@ import { stateToProps } from '../util';
 
 import Song from '../songs/Song';
 import AddSongForm from '../songs/AddSongForm';
+import Comment from '../comments/Comment';
+import AddCommentForm from '../comments/AddCommentForm';
 
 function Project(props) {
-	const { project, songs, profile } = props;
+	const { project, profile, songs, comments } = props;
 
 	return (
 		<section className="project">
@@ -19,8 +21,13 @@ function Project(props) {
 				{songs.map(song => <Song key={song.key} song={song} />)}
 			</section>
 			<AddSongForm project={project} />
+			<section className="comments">
+				<h2>Comments {comments.length}</h2>
+				{comments.map(cmt => <Comment key={cmt.key} comment={cmt} />)}
+			</section>
+			<AddCommentForm project={project} />
 		</section>
 	);
 }
 
-export default connect(stateToProps('project', 'profile', 'songs'))(Project)
+export default connect(stateToProps('project', 'profile', 'songs', 'comments'))(Project)

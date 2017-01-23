@@ -5,6 +5,7 @@ import profileReducer from './project/reducers';
 import groups from './groups/reducers';
 import songs from './songs/reducers';
 import tracks from './tracks/reducers';
+import comments from './comments/reducers';
 
 const dummyReducer = (state={}, action) => state;
 
@@ -25,6 +26,7 @@ export default reduceReducers(
 		songs,
 		groups,
 		tracks,
+		comments,
 		profile: dummyReducer,
 		project: dummyReducer
 	})

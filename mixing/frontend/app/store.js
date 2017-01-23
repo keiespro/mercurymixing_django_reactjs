@@ -11,7 +11,8 @@ const EMPTY = {
 	profile: {},
 	songs: [],
 	groups: [],
-	tracks: []
+	tracks: [],
+	comments: []
 };
 
 // window.initialState is populated by Django in mixing/project_detail.html
@@ -19,7 +20,7 @@ const INITIAL = window.initialState || EMPTY;
 
 // All initial elements should have a 'key' property to keep track of them in the UI
 // Yes, we're mutating the initial state because we havent initialized the store yet
-['songs', 'groups', 'tracks'].forEach(key => {
+['songs', 'groups', 'tracks', 'comments'].forEach(key => {
 	INITIAL[key] = INITIAL[key].map(obj => {
 		if (!('key' in obj)) obj.key = getKey();
 		return obj;
