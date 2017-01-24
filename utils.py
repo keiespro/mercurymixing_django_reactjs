@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import re
 import sys
 import traceback
+import uuid
 import unicodedata
 
 from StringIO import StringIO
@@ -12,6 +13,13 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils.safestring import mark_safe
 from django.utils.text import force_text
 from django.views.debug import ExceptionReporter
+
+
+def get_uid(limit=36):
+    """
+    Create a UUID4 truncated to limit.
+    """
+    return str(uuid.uuid4())[:limit]
 
 
 def get_user_display(user):

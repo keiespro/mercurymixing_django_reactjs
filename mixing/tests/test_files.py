@@ -1,9 +1,9 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from utils import status, create_temp_file
+from utils import status, create_temp_file, get_uid
 
 from mixing.models import Project, Song, Group, Track, Comment, FinalFile
 
@@ -31,21 +31,23 @@ def create_private_files(owner):
 class PrivateFieldTests(TestCase):
 
     @classmethod
-    def setUpTestData(cls):
+    def setUpClass(cls):
         """
         Runs once per class, not once per test method.
         Make sure all objects defined here are NOT modified in test methods.
-        https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.TestCase.setUpTestData
+        Django provides it's own setUpTestData, but it appears to be buggy
+        when used with Postgres, raising InterfaceError: Connection already closed.
+        https://groups.google.com/d/msg/django-users/MDRcg4Fur98/cGYs8cmQLAAJ
         """
-        cls.staff_data = {"username": "staff", "password": "staff"}
+        cls.staff_data = {"username": get_uid(30), "password": "staff"}
         cls.staff = User.objects.create_user(**cls.staff_data)
         cls.staff.is_staff = True
         cls.staff.save()
 
-        cls.non_owner_data = {"username": "other", "password": "other"}
+        cls.non_owner_data = {"username": get_uid(30), "password": "other"}
         cls.non_owner = User.objects.create_user(**cls.non_owner_data)
 
-        cls.owner_data = {"username": "owner", "password": "owner"}
+        cls.owner_data = {"username": get_uid(30), "password": "owner"}
         cls.owner = User.objects.create_user(**cls.owner_data)
         cls.owner.profile.track_credit = 1
         cls.owner.profile.save()

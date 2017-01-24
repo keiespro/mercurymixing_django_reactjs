@@ -7,7 +7,7 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from utils import create_temp_file
+from utils import create_temp_file, get_uid
 from mixing.models import Project, Song, Group, Track, Comment
 
 User = get_user_model()
@@ -18,8 +18,8 @@ def create_temp_track():
 
 
 def create_song_dependencies(instance):
-    instance.owner = User.objects.create(username="owner")
-    instance.non_owner = User.objects.create(username="non_owner")
+    instance.owner = User.objects.create(username=get_uid(30))
+    instance.non_owner = User.objects.create(username=get_uid(30))
     instance.active_project = Project.objects.create(
         title="Active Project",
         owner=instance.owner,

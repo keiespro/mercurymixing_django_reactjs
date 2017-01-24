@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
-from utils import status, create_temp_file
+from utils import status, create_temp_file, get_uid
 
 from mixing.models import Project, Song, Group, Track
 from .models import Purchase, UserProfile
@@ -34,11 +34,10 @@ class PurchaseTests(TestCase):
 
     def setUp(self):
         self.auth_data = {
-            "username": "test",
+            "username": get_uid(30),
             "password": "test",
         }
         self.user = User.objects.create_user(**self.auth_data)
-        UserProfile.objects.get_or_create(user=self.user)
 
     def test_purchase_requires_login(self):
         # User is anon
