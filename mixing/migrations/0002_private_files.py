@@ -17,12 +17,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='comment',
             name='attachment',
-            field=private_storage.fields.PrivateFileField(storage=private_storage.storage.PrivateStorage(), upload_to=mixing.permissions.private_comment_path, max_length=255, verbose_name='Attachement', blank=True),
+            field=private_storage.fields.PrivateFileField(storage=private_storage.storage.PrivateStorage(), upload_to=mixing.permissions.private_comment_path, max_length=255, verbose_name='Attachment', blank=True),
         ),
         migrations.AlterField(
             model_name='finalfile',
             name='attachment',
-            field=private_storage.fields.PrivateFileField(storage=private_storage.storage.PrivateStorage(), upload_to=mixing.permissions.private_final_path, max_length=255, verbose_name='Attachement'),
+            field=private_storage.fields.PrivateFileField(storage=private_storage.storage.PrivateStorage(), upload_to=mixing.permissions.private_final_path, max_length=255, verbose_name='Attachment'),
         ),
         migrations.AlterField(
             model_name='track',

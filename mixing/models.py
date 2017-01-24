@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.core.urlresolvers import reverse
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -17,29 +18,36 @@ from .permissions import (
 class Project(TimeStamped):
     """
     A mixing project created by a user.
+    The main organization unit for storing user-uploaded Tracks.
+    See README for full description.
     """
-    STATUS_USER_NOT_READY = 1
+    STATUS_FILES_PENDING = 1
     STATUS_IN_PROGRESS = 2
     STATUS_COMPLETE = 3
-    STATUS_REVISION_REQUESTED = 4
+    STATUS_REVISION_FILES_PENDING = 4
     STATUS_REVISION_IN_PROGRESS = 5
     STATUS_REVISION_COMPLETE = 6
 
+    WAITING = [STATUS_FILES_PENDING, STATUS_REVISION_FILES_PENDING]
+    IN_PROGRESS = [STATUS_IN_PROGRESS, STATUS_REVISION_IN_PROGRESS]
+    ALL_DONE = [STATUS_COMPLETE, STATUS_REVISION_COMPLETE]
+
     STATUS_CHOICES = (
-        (STATUS_USER_NOT_READY, "Waiting for user"),
+        (STATUS_FILES_PENDING, "Waiting for files"),
         (STATUS_IN_PROGRESS, "In progress"),
         (STATUS_COMPLETE, "Mixing complete"),
-        (STATUS_REVISION_REQUESTED, "Revision requested"),
+        (STATUS_REVISION_FILES_PENDING, "Waiting for revision files"),
         (STATUS_REVISION_IN_PROGRESS, "Revision in progress"),
         (STATUS_REVISION_COMPLETE, "Revision complete"),
     )
 
     title = models.CharField("Title", max_length=100)
-    active = models.BooleanField("Active", default=True)
+    active = models.BooleanField(
+        "Active", default=True, help_text="Indicates if users can upload files")
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="projects", verbose_name="Owner")
     status = models.PositiveIntegerField(
-        "Status", choices=STATUS_CHOICES, default=STATUS_USER_NOT_READY)
+        "Status", choices=STATUS_CHOICES, default=STATUS_FILES_PENDING)
     priority = models.SmallIntegerField(
         "Priority", default=10,
         validators=[MinValueValidator(0), MaxValueValidator(10)],
@@ -53,14 +61,29 @@ class Project(TimeStamped):
         return self.title
 
     def save(self, *args, **kwargs):
-        # Project is done, remove from priority flow and deactivate
-        if self.status in [self.STATUS_COMPLETE, self.STATUS_REVISION_COMPLETE]:
-            self.priority = 10
-            self.active = False
-        # Project is not complete, leave the priority alone and reactivate
-        else:
+        """
+        Update the active flag and priority depending ones the status field.
+        """
+        # Enable file uploads and mark as non-important
+        if self.status in self.WAITING:
             self.active = True
+            self.priority = 10
+
+        # Disable file uploads and add the project to the priority queue (if needed)
+        elif self.status in self.IN_PROGRESS:
+            self.active = False
+            if self.priority == 10:
+                self.priority = 9
+
+        # Disable file uploads and mark as non important
+        elif self.status in self.ALL_DONE:
+            self.active = False
+            self.priority = 10
+
         super(Project, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("project_detail", args=[self.pk])
 
 
 @python_2_unicode_compatible
@@ -74,7 +97,7 @@ class Comment(TimeStamped):
         settings.AUTH_USER_MODEL, related_name="comments", verbose_name="Author")
     content = models.TextField("Content")
     attachment = PrivateFileField(
-        "Attachement", max_length=255, blank=True, upload_to=private_comment_path)
+        "Attachment", max_length=255, blank=True, upload_to=private_comment_path)
 
     class Meta:
         verbose_name = "comment"
@@ -95,7 +118,7 @@ class FinalFile(TimeStamped):
     project = models.ForeignKey(Project, related_name="final_files")
     notes = models.TextField("Notes", blank=True)
     attachment = PrivateFileField(
-        "Attachement", max_length=255, upload_to=private_final_path)
+        "Attachment", max_length=255, upload_to=private_final_path)
 
     class Meta:
         verbose_name = "final file"

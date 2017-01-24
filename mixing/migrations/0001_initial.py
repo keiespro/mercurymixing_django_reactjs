@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(null=True, editable=False)),
                 ('updated', models.DateTimeField(null=True, editable=False)),
                 ('content', models.TextField(verbose_name='Content')),
-                ('attachment', models.FileField(upload_to='comments', max_length=255, verbose_name='Attachement', blank=True)),
+                ('attachment', models.FileField(upload_to='comments', max_length=255, verbose_name='Attachment', blank=True)),
                 ('author', models.ForeignKey(related_name='comments', verbose_name='Author', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(null=True, editable=False)),
                 ('updated', models.DateTimeField(null=True, editable=False)),
                 ('notes', models.TextField(verbose_name='Notes', blank=True)),
-                ('attachment', models.FileField(upload_to='finals', max_length=255, verbose_name='Attachement')),
+                ('attachment', models.FileField(upload_to='finals', max_length=255, verbose_name='Attachment')),
             ],
             options={
                 'verbose_name': 'final file',
@@ -61,8 +61,8 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(null=True, editable=False)),
                 ('updated', models.DateTimeField(null=True, editable=False)),
                 ('title', models.CharField(max_length=100, verbose_name='Title')),
-                ('active', models.BooleanField(default=True, verbose_name='Active')),
-                ('status', models.PositiveIntegerField(default=1, verbose_name='Status', choices=[(1, 'Waiting for user'), (2, 'In progress'), (3, 'Mixing complete'), (4, 'Revision requested'), (5, 'Revision in progress'), (6, 'Revision complete')])),
+                ('active', models.BooleanField(default=True, verbose_name='Active', help_text='Indicates if users can upload files')),
+                ('status', models.PositiveIntegerField(default=1, verbose_name='Status', choices=[(1, 'Waiting for files'), (2, 'In progress'), (3, 'Mixing complete'), (4, 'Waiting for revision files'), (5, 'Revision in progress'), (6, 'Revision complete')])),
                 ('priority', models.SmallIntegerField(default=10, help_text='Lower numbers indicate a higher priority for this project', verbose_name='Priority', validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(10)])),
                 ('owner', models.ForeignKey(related_name='projects', verbose_name='Owner', to=settings.AUTH_USER_MODEL)),
             ],
