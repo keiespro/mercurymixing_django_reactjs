@@ -79,7 +79,7 @@ class ProjectTest(TestCase):
         self.assertEquals(project.priority, 10)
         self.assertEquals(project.active, False)
 
-    def test_project_detail_access(self):
+    def test_project_detail(self):
         project = Project.objects.create(title="Test project", owner=self.owner)
         project_url = project.get_absolute_url()
 
@@ -96,3 +96,145 @@ class ProjectTest(TestCase):
         self.client.login(**self.owner_data)
         response = self.client.get(project_url)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
+
+    def test_project_submit_files_pending(self):
+        """
+        Test the status workflow when the project is set to FILES_PENDING.
+        """
+        project = Project.objects.create(
+            title="Test project",
+            owner=self.owner,
+            status=Project.STATUS_FILES_PENDING
+        )
+        submit_url = reverse("project_submit", args=[project.pk])
+
+        # Anon user shouldn't be able to update the status
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, login_url + "?next=" + submit_url)
+        self.assertEquals(project.status, Project.STATUS_FILES_PENDING)
+
+        # Same with non owner
+        self.client.login(**self.non_owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEquals(project.status, Project.STATUS_FILES_PENDING)
+
+        # Owner should be redirected and the status changed
+        self.client.login(**self.owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, project.get_absolute_url())
+        self.assertEquals(project.status, Project.STATUS_IN_PROGRESS)
+        self.assertEquals(project.active, False)
+
+        # Upon a second visit the status shouldn't change
+        self.client.login(**self.owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, project.get_absolute_url())
+        self.assertEquals(project.status, Project.STATUS_IN_PROGRESS)
+        self.assertEquals(project.active, False)
+
+    def test_project_submit_revision_files_pending(self):
+        """
+        Test the status workflow when the project is set to REVISION_FILES_PENDING.
+        """
+        project = Project.objects.create(
+            title="Test project",
+            owner=self.owner,
+            status=Project.STATUS_REVISION_FILES_PENDING
+        )
+        submit_url = reverse("project_submit", args=[project.pk])
+
+        # Anon user shouldn't be able to update the status
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, login_url + "?next=" + submit_url)
+        self.assertEquals(project.status, Project.STATUS_REVISION_FILES_PENDING)
+
+        # Same with non owner
+        self.client.login(**self.non_owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEquals(project.status, Project.STATUS_REVISION_FILES_PENDING)
+
+        # Owner should be redirected and the status changed
+        self.client.login(**self.owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, project.get_absolute_url())
+        self.assertEquals(project.status, Project.STATUS_REVISION_IN_PROGRESS)
+        self.assertEquals(project.active, False)
+
+        # Upon a second visit the status shouldn't change
+        self.client.login(**self.owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, project.get_absolute_url())
+        self.assertEquals(project.status, Project.STATUS_REVISION_IN_PROGRESS)
+        self.assertEquals(project.active, False)
+
+    def test_project_submit_complete(self):
+        """
+        Test the status workflow when the project is set to COMPLETE.
+        """
+        project = Project.objects.create(
+            title="Test project",
+            owner=self.owner,
+            status=Project.STATUS_COMPLETE
+        )
+        submit_url = reverse("project_submit", args=[project.pk])
+
+        # Anon user shouldn't be able to update the status
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, login_url + "?next=" + submit_url)
+        self.assertEquals(project.status, Project.STATUS_COMPLETE)
+
+        # Same with non owner
+        self.client.login(**self.non_owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEquals(project.status, Project.STATUS_COMPLETE)
+
+        # Same with owner
+        self.client.login(**self.owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, project.get_absolute_url())
+        self.assertEquals(project.status, Project.STATUS_COMPLETE)
+
+    def test_project_submit_revision_complete(self):
+        """
+        Test the status workflow when the project is set to REVISION_COMPLETE.
+        """
+        project = Project.objects.create(
+            title="Test project",
+            owner=self.owner,
+            status=Project.STATUS_REVISION_COMPLETE
+        )
+        submit_url = reverse("project_submit", args=[project.pk])
+
+        # Anon user shouldn't be able to update the status
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, login_url + "?next=" + submit_url)
+        self.assertEquals(project.status, Project.STATUS_REVISION_COMPLETE)
+
+        # Same with non owner
+        self.client.login(**self.non_owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEquals(project.status, Project.STATUS_REVISION_COMPLETE)
+
+        # Same with owner
+        self.client.login(**self.owner_data)
+        response = self.client.get(submit_url)
+        project.refresh_from_db()
+        self.assertRedirects(response, project.get_absolute_url())
+        self.assertEquals(project.status, Project.STATUS_REVISION_COMPLETE)

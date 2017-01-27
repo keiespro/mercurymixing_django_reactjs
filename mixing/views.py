@@ -87,6 +87,36 @@ class ProjectDetail(generic.TemplateView):
         return super(ProjectDetail, self).get_context_data(**kwargs)
 
 
+class ProjectSubmit(ProjectDetail):
+    """
+    Visited by the user when they want to indicate that all files
+    have been uploaded and are ready for mixing.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """
+        Set the correct status on the Project and redirect to ProjectDetail.
+        This should cascade and set the correct priority and active flag in save().
+        """
+        project = self.get_project()
+
+        if project.status is Project.STATUS_FILES_PENDING:
+            project.status = Project.STATUS_IN_PROGRESS
+
+        if project.status is Project.STATUS_REVISION_FILES_PENDING:
+            project.status = Project.STATUS_REVISION_IN_PROGRESS
+
+        project.save()
+        info(
+            request,
+            "Mixing of your project is now in progress! We will notify you "
+            "when the process is complete.",
+            fail_silently=True
+        )
+
+        return HttpResponseRedirect(project.get_absolute_url())
+
+
 #############
 # API Views #
 #############

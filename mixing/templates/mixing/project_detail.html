@@ -7,6 +7,13 @@
 			<h1>{{ project.title }}</h1>
 			<ul class="project-status">
 				<li>Status: {{ project.get_status_display }}</li>
+				{% if project_is_waiting_for_files %}
+				<li>
+					<a id="start-mixing" href="{% url 'project_submit' project.pk %}">
+						Finish uploads and start mixing
+					</a>
+				</li>
+				{% endif %}
 			</ul>
 			<ul class="profile-status">
 				<li>
@@ -25,7 +32,19 @@
 
 {% block extra_js %}
 	<script>
+		// Populate Redux's state
 		window.initialState = JSON.parse('{{ state|escapejs }}');
+
+		// Confirm after the user clicks the "Start mixing" button
+		var startBtn = document.querySelector('#start-mixing');
+		var confirmStartMsg = 'Great! Your project is ready for mixing. ' +
+			'Just keep in mind that all ongoing file uploads will be canceled ' +
+			'and you won\'t be able to upload any new files. Do you want to continue?'
+
+		if (startBtn) startBtn.addEventListener('click', function(event) {
+			if (confirm(confirmStartMsg)) return true;
+			event.preventDefault();
+		});
 	</script>
 	<script src="http://localhost:8080/mixing.js"></script>
 {% endblock extra_js %}

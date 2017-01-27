@@ -10,8 +10,15 @@ router.register(r"groups", views.GroupViewSet)
 router.register(r"tracks", views.TrackViewSet)
 router.register(r"comments", views.CommentViewSet)
 
-# Wire up our API using automatic URL routing.
 urlpatterns = [
-    url(r"^projects/(?P<pk>[0-9]+)/$", views.ProjectDetail.as_view(), name="project_detail"),
+    url(
+        r"^projects/(?P<pk>[0-9]+)/submit/$", views.ProjectSubmit.as_view(),
+        name="project_submit"
+    ),
+    url(
+        r"^projects/(?P<pk>[0-9]+)/$", views.ProjectDetail.as_view(),
+        name="project_detail"
+    ),
+    # Wire up our API using automatic URL routing.
     url(r"^api/", include(router.urls)),
 ]
