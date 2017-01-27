@@ -98,21 +98,25 @@ class ProjectSubmit(ProjectDetail):
         Set the correct status on the Project and redirect to ProjectDetail.
         This should cascade and set the correct priority and active flag in save().
         """
+        changed = False
         project = self.get_project()
 
         if project.status is Project.STATUS_FILES_PENDING:
             project.status = Project.STATUS_IN_PROGRESS
+            changed = True
 
         if project.status is Project.STATUS_REVISION_FILES_PENDING:
             project.status = Project.STATUS_REVISION_IN_PROGRESS
+            changed = True
 
-        project.save()
-        info(
-            request,
-            "Mixing of your project is now in progress! We will notify you "
-            "when the process is complete.",
-            fail_silently=True
-        )
+        if changed:
+            project.save()
+            info(
+                request,
+                "Mixing of your project is now in progress! We will notify you "
+                "when the process is complete.",
+                fail_silently=True
+            )
 
         return HttpResponseRedirect(project.get_absolute_url())
 
