@@ -8,15 +8,10 @@ import Comment from '../comments/Comment';
 import AddCommentForm from '../comments/AddCommentForm';
 
 function Project(props) {
-	const { project, profile, songs, comments } = props;
+	const { project, songs, comments } = props;
 
 	return (
-		<section className="project">
-			<h1>Project: {project.title}</h1>
-			<ul className="profile-meta">
-				<li>Available track credits: <span>{profile.trackCredit}</span></li>
-				<li><a href={profile.purchaseUrl}>Get more credits</a></li>
-			</ul>
+		<section className={project.active ? 'project active' : 'project inactive'}>
 			<section className="songs">
 				{songs.map(song => <Song key={song.key} song={song} />)}
 			</section>
@@ -30,4 +25,4 @@ function Project(props) {
 	);
 }
 
-export default connect(stateToProps('project', 'profile', 'songs', 'comments'))(Project)
+export default connect(stateToProps('project', 'songs', 'comments'))(Project)

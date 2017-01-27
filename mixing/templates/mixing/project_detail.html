@@ -1,14 +1,31 @@
 {% extends "base.html" %}
 
 {% block main %}
-	<div id="root">
-		{# React will be injected here #}
+	<div class="project-area">
+
+		<aside>
+			<h1>{{ project.title }}</h1>
+			<ul class="project-status">
+				<li>Status: {{ project.get_status_display }}</li>
+			</ul>
+			<ul class="profile-status">
+				<li>
+					Available track credits:
+					<span id="track-credit">{{ user.profile.track_credit }}</span>
+				</li>
+				<li><a href="{% url 'purchases:dashboard' %}">Get more credits</a></li>
+			</ul>
+		</aside>
+
+		<div id="root" class="project-root">
+			{# React will be injected here #}
+		</div>
 	</div>
 {% endblock main %}
 
 {% block extra_js %}
 	<script>
-		window.initialState = JSON.parse('{{ state|escapejs }}')
+		window.initialState = JSON.parse('{{ state|escapejs }}');
 	</script>
 	<script src="http://localhost:8080/mixing.js"></script>
 {% endblock extra_js %}

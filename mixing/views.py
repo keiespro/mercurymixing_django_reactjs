@@ -4,7 +4,10 @@ import json
 
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages import info
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views import generic
 
@@ -27,9 +30,8 @@ from .purchases.models import UserProfile
 # Regular Views #
 #################
 
-class ProjectDetail(generic.DetailView):
+class ProjectDetail(generic.TemplateView):
     template_name = "mixing/project_detail.html"
-    context_object_name = "project"
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -40,25 +42,27 @@ class ProjectDetail(generic.DetailView):
         """
         return super(ProjectDetail, self).dispatch(*args, **kwargs)
 
-    def get_queryset(self):
+    def get_project(self):
         """
         Only search projects owned by the user.
         """
-        return Project.objects.filter(owner=self.request.user)
+        return get_object_or_404(
+            Project,
+            pk=self.kwargs.get("pk"),
+            owner=self.request.user
+        )
 
-    def get_context_data(self, **kwargs):
+    def get_state(self, project):
         """
-        Add the context needed to prime Redux's state.
+        Create the JSON tree to prime Redux's state.
         """
-        project = self.object
         songs = project.songs.all()
         comments = project.comments.all()
         groups = Group.objects.filter(song=songs)
         tracks = Track.objects.filter(group=groups)
         profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
-        purchase_url = reverse("purchases:dashboard")
 
-        state = {
+        return json.dumps({
             "project": ProjectSerializer(project).data,
             "songs": SongSerializer(songs, many=True).data,
             "groups": GroupSerializer(groups, many=True).data,
@@ -67,13 +71,19 @@ class ProjectDetail(generic.DetailView):
             "profile": {
                 "user": get_user_display(project.owner),
                 "trackCredit": profile.track_credit,
-                "purchaseUrl": purchase_url,
+                "purchaseUrl": reverse("purchases:dashboard"),
             }
-        }
+        })
+
+    def get_context_data(self, **kwargs):
+        project = self.get_project()
 
         kwargs.update({
-            "state": json.dumps(state)
+            "project": project,
+            "project_is_waiting_for_files": project.status in Project.WAITING,
+            "state": self.get_state(project)
         })
+
         return super(ProjectDetail, self).get_context_data(**kwargs)
 
 
