@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -64,13 +64,15 @@ def increase_track_credit_on_track_delete(sender, instance, **kwargs):
     profile.save()
 
 
-@receiver(post_save, sender="mixing.Track")
-def decrease_track_credit_on_track_add(sender, instance, created, **kwargs):
+@receiver(pre_save, sender="mixing.Track")
+def decrease_track_credit_on_track_add(sender, instance, **kwargs):
     """
     Decrease the user's track credit when a Track is created.
+    If the track credit is reduced below 0, IntegrityError will be raised
+    and the saving of the track will be prevented.
     """
-    user = instance.group.song.project.owner
-    profile, _ = UserProfile.objects.get_or_create(user=user)
-    if created:
+    if instance.pk is None:  # Only fire for new objects
+        user = instance.group.song.project.owner
+        profile, _ = UserProfile.objects.get_or_create(user=user)
         profile.track_credit = F("track_credit") - 1
         profile.save()
