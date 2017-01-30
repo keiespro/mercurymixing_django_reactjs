@@ -2,6 +2,7 @@ import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 import { getKey } from './api';
+import { updateDOM, deepGet } from './util';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const ENHANCERS = composeEnhancers(applyMiddleware(thunk))
@@ -27,8 +28,22 @@ const INITIAL = window.initialState || EMPTY;
 	});
 });
 
+/**
+ * Callback to be executed when a Redux action is dispatched.
+ * @param  {Object} state The Redux state object
+ */
+function onActionDispatch (state) {
+	updateDOM('.track-credit-display', deepGet(state, 'profile.trackCredit'));
+}
+
+/**
+ * Wire up the Redux store with the reducers, subscribers, and enhancers.
+ * @return {Store} The configured Redux store
+ */
 export default function configureStore() {
 	const store = createStore(rootReducer, INITIAL, ENHANCERS);
+
+	store.subscribe(() => onActionDispatch(store.getState()));
 
 	if (module.hot) {
 		// Enable Webpack hot module replacement for reducers

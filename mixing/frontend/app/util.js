@@ -135,3 +135,14 @@ export function deleteButton (obj, removeFunc) {
 		</button>
 	)
 }
+
+/**
+ * Populate all nodes matching `selector` with `content`.
+ * Used for write-only updates on DOM elements outside of React's control.
+ * @param  {String} selector A valid DOM selector string
+ * @param  {String} content  The content that will be used to update the element
+ */
+export function updateDOM (selector, content) {
+	const nodes = document.querySelectorAll(selector);
+	[].forEach.call(nodes, node => node.innerHTML = content);
+}
