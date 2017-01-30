@@ -8,11 +8,28 @@ import unicodedata
 
 from StringIO import StringIO
 
+from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils.safestring import mark_safe
 from django.utils.text import force_text
 from django.views.debug import ExceptionReporter
+
+from mezzanine.core.models import SitePermission
+from mezzanine.utils.sites import current_site_id
+
+
+def add_site_permission(user, site=None):
+    """
+    Add permissions for a site to the user.
+    Without this non-superusers cannot login to the admin.
+    The current site will be used if the site kwarg is not provided.
+    """
+    if not isinstance(site, Site):
+        site = Site.objects.get(id=current_site_id())
+
+    siteperm, _ = SitePermission.objects.get_or_create(user=user)
+    siteperm.sites.add(site)
 
 
 def get_uid(limit=36):
