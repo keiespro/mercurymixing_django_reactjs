@@ -119,7 +119,7 @@ class FinalFile(TimeStamped):
     Uploaded by a staff member and downloaded by the user.
     """
     project = models.ForeignKey(Project, related_name="final_files")
-    notes = models.TextField("Notes", blank=True)
+    title = models.CharField("Title", max_length=100, blank=True)
     attachment = PrivateFileField(
         "Attachment", max_length=255, upload_to=private_final_path)
 

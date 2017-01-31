@@ -12,9 +12,9 @@ from django.utils.html import mark_safe
 from django.utils.six import b
 from django.utils.timezone import now, get_default_timezone
 
-from mezzanine.core.admin import StackedDynamicInlineAdmin
+from mezzanine.core.admin import StackedDynamicInlineAdmin, TabularDynamicInlineAdmin
 
-from .models import Project, Track, Comment
+from .models import Project, Track, Comment, FinalFile
 
 TZ = get_default_timezone()
 
@@ -62,9 +62,15 @@ class CommentInlineAdmin(StackedDynamicInlineAdmin):
     readonly_fields = ["created", "author"]
 
 
+class FinalFileInlineAdmin(TabularDynamicInlineAdmin):
+    model = FinalFile
+    fields = ["created", "title", "attachment"]
+    readonly_fields = ["created"]
+
+
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    inlines = [CommentInlineAdmin]
+    inlines = [FinalFileInlineAdmin, CommentInlineAdmin]
     ordering = ["priority", "-created"]
     date_hierarchy = "created"
     list_display = ["title", "owner", "created", "status", "priority"]
