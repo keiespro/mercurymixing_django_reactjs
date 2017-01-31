@@ -8,6 +8,8 @@ from django.views.i18n import set_language
 from mezzanine.core.views import direct_to_template
 from mezzanine.conf import settings
 
+from utils import views as util_views
+
 
 admin.autodiscover()
 
@@ -69,7 +71,10 @@ urlpatterns += [
     # CUSTOM URLS
     # -----------
 
-    url("^private/", include("private_storage.urls")),
+    url(
+        r"^private/(?P<path>.*)$", util_views.PrivateAttachment.as_view(),
+        name="serve_private_file"
+    ),
     url("^purchases/", include("mixing.purchases.urls", namespace="purchases")),
     url("^", include("mixing.urls")),
 
