@@ -81,6 +81,7 @@ class ProjectDetail(generic.TemplateView):
         kwargs.update({
             "project": project,
             "project_is_waiting_for_files": project.status in Project.WAITING,
+            "project_all_done": project.status in Project.ALL_DONE,
             "state": self.get_state(project)
         })
 

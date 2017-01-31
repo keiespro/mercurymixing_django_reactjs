@@ -129,8 +129,10 @@ class FinalFile(TimeStamped):
 
     def __str__(self):
         # Filename and extension
+        if self.title:
+            return self.title
         try:
-            return self.file.name.split('/')[-1]
+            return self.attachment.name.split("/")[-1]
         except AttributeError:
             return ""
 

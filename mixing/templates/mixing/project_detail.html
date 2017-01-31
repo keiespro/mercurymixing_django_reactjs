@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block main %}
+	{% if project_all_done %}
+		<div class="final-file-area">
+			<h3>All your tracks have been mixed!</h3>
+			<p>You can download your final files below:</p>
+			<ul class="final-files">
+				{% for file in project.final_files.all %}
+					<li><a href="{{ file.attachment.url }}">{{ file }}</a></li>
+				{% empty %}
+					<li>No files have been added yet.</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
 	<div class="project-area">
 
 		<aside>
