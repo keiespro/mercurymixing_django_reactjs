@@ -1,14 +1,17 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 from django.core.urlresolvers import reverse
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.template.defaultfilters import truncatechars
 from django.utils.encoding import python_2_unicode_compatible
 
 from private_storage.fields import PrivateFileField
 
 from mezzanine.conf import settings
 from mezzanine.core.models import TimeStamped
+
+from utils import get_user_display
 
 from .permissions import (
     private_comment_path, private_final_path, private_track_path)
@@ -105,8 +108,8 @@ class Comment(TimeStamped):
         ordering = ["created"]
 
     def __str__(self):
-        # Remove newlines and return the 20 first chars
-        return " ".join(self.content.split())[:20]
+        excerpt = truncatechars(self.content, 40)
+        return "%s: %s" % (get_user_display(self.author), excerpt)
 
 
 @python_2_unicode_compatible

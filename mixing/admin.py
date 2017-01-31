@@ -12,7 +12,9 @@ from django.utils.html import mark_safe
 from django.utils.six import b
 from django.utils.timezone import now, get_default_timezone
 
-from .models import Project, Track
+from mezzanine.core.admin import StackedDynamicInlineAdmin
+
+from .models import Project, Track, Comment
 
 TZ = get_default_timezone()
 
@@ -54,8 +56,15 @@ def serve_tracks_as_zipfile(request, pk):
     return response
 
 
+class CommentInlineAdmin(StackedDynamicInlineAdmin):
+    model = Comment
+    fields = ["created", "author", "content", "attachment"]
+    readonly_fields = ["created", "author"]
+
+
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
+    inlines = [CommentInlineAdmin]
     ordering = ["priority", "-created"]
     date_hierarchy = "created"
     list_display = ["title", "owner", "created", "status", "priority"]
@@ -75,12 +84,26 @@ class ProjectAdmin(admin.ModelAdmin):
 
     class Media:
         """
-        Include the assets required by track_browser.
+        Include our style and script customizations for the Project admin.
         """
         css = {
             "all": ("admin/mixing/styles.css",),
         }
         js = ("admin/mixing/scripts.js",)
+
+    def save_formset(self, request, form, formset, change):
+        """
+        Populate the author field on inline Comments since it's marked as read-only.
+        """
+        if formset.model is Comment:
+            comments = formset.save(commit=False)
+            for comment in comments:
+                if not comment.author_id:
+                    comment.author = request.user
+                comment.save()
+            formset.save_m2m()
+        else:
+            super(ProjectAdmin, self).save_formset(request, form, formset, change)
 
     def get_urls(self):
         """
