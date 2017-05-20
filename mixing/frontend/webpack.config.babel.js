@@ -40,7 +40,7 @@ const prodPlugins = [
 module.exports = {
 	entry: {
 		mixing: './app/index.js',
-		classic: './classic/index.js'
+		classic: './classic/index.js',
 	},
 
 	output: {
@@ -52,8 +52,8 @@ module.exports = {
 	resolve: {
 		alias: {
 			react: 'preact-compat',
-			'react-dom': 'preact-compat'
-		}
+			'react-dom': 'preact-compat',
+		},
 	},
 
 	module: {
@@ -82,8 +82,8 @@ module.exports = {
 			{
 				test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif)(\?.*)?$/i,
 				loader: 'file-loader',
-			}
-		]
+			},
+		],
 	},
 
 	plugins: ([
@@ -129,7 +129,7 @@ module.exports = {
 		contentBase: './src',
 		historyApiFallback: true,
 		headers: {
-			'Access-Control-Allow-Origin': '*'
-		}
-	}
+			'Access-Control-Allow-Origin': '*',
+		},
+	},
 };
