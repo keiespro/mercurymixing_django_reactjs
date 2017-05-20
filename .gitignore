@@ -2,6 +2,7 @@
 *.pyo
 *.db
 *.sublime-workspace
+.anaconda
 .DS_Store
 .coverage
 .sass-cache
