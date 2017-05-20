@@ -1,13 +1,41 @@
-import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import autoprefixer from 'autoprefixer';
-import path from 'path';
+const autoprefixer = require('autoprefixer');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
 
 const ENV = process.env.NODE_ENV || 'development';
-
 const PORT = process.env.PORT || 8080;
+const IS_DEV = ENV !== 'production';
 
-const CSS_MAPS = ENV!=='production';
+const styleConfig = [
+	{
+		loader: 'css-loader',
+		options: { sourceMap: IS_DEV },
+	},
+	{
+		loader: 'postcss-loader',
+		options: {
+			sourceMap: IS_DEV,
+			plugins: () => [
+				autoprefixer(), // See browserslist file
+			],
+		},
+	},
+	{
+		loader: 'sass-loader',
+		options: { sourceMap: IS_DEV, sourceMapContents: IS_DEV },
+	},
+];
+
+const devPlugins = [];
+
+const prodPlugins = [
+	new webpack.LoaderOptionsPlugin({
+		minimize: true,
+		debug: false,
+	}),
+	new webpack.optimize.UglifyJsPlugin(),
+];
 
 module.exports = {
 	entry: {
@@ -16,114 +44,92 @@ module.exports = {
 	},
 
 	output: {
+		filename: '[name].js',
 		path: path.resolve(__dirname, '../static/build'),
-		publicPath: ENV !== 'production' ? `http://localhost:${PORT}/` : '/',
-		filename: '[name].js'
+		publicPath: IS_DEV ? `http://localhost:${PORT}/` : '/',
 	},
 
 	resolve: {
-		extensions: ['', '.jsx', '.js', '.json', '.scss'],
-		modulesDirectories: [
-			path.resolve(__dirname, 'app/lib'),
-			path.resolve(__dirname, 'node_modules'),
-			'node_modules'
-		],
 		alias: {
-			components: path.resolve(__dirname, 'app/components'),		// used for tests
-			style: path.resolve(__dirname, 'style'),
-			'react': 'preact-compat',
+			react: 'preact-compat',
 			'react-dom': 'preact-compat'
 		}
 	},
 
 	module: {
-		preLoaders: [
-			{
-				test: /\.jsx?$/,
-				loader: 'eslint',
-				include: /(app|classic)\//,
-			},
-			{
-				test: /\.jsx?$/,
-				exclude: /(app|classic)\//,
-				loader: 'source-map'
-			}
-		],
-		loaders: [
+		rules: [
 			{
 				test: /\.jsx?$/,
 				exclude: /node_modules/,
-				loader: 'babel'
+				// See .babelrc and .eslintrc.js
+				use: ['babel-loader', 'eslint-loader'],
 			},
 			{
 				test: /\.s?css$/,
-				include: /style\//,
-				loader: ExtractTextPlugin.extract('style', [
-					`css?sourceMap=${CSS_MAPS}`,
-					`postcss?sourceMap=${CSS_MAPS}`,
-					`sass?sourceMap=${CSS_MAPS}`
-				].join('!'))
+				use: ExtractTextPlugin.extract({
+					fallback: 'style-loader',
+					use: styleConfig,
+				}),
 			},
 			{
 				test: /\.json$/,
-				loader: 'json'
+				loader: 'json-loader',
 			},
 			{
 				test: /\.(xml|html|txt|md)$/,
-				loader: 'raw'
+				loader: 'raw-loader',
 			},
 			{
 				test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif)(\?.*)?$/i,
-				loader: ENV==='production' ? 'file?name=[path][name]_[hash:base64:5].[ext]' : 'url'
+				loader: 'file-loader',
 			}
 		]
 	},
 
-	postcss: () => [
-		autoprefixer({ browsers: 'last 2 versions' })
-	],
-
 	plugins: ([
-		new webpack.NoErrorsPlugin(),
-		new ExtractTextPlugin('[name].css', {
+		new webpack.NoEmitOnErrorsPlugin(),
+		new webpack.NamedModulesPlugin(),
+		new ExtractTextPlugin({
+			filename: '[name].css',
 			allChunks: true,
-			disable: ENV!=='production'
+			disable: IS_DEV,
 		}),
-		new webpack.DefinePlugin({
-			'process.env': JSON.stringify({ NODE_ENV: ENV })
-		})
-	]).concat(ENV === 'production' ? [
-		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.OccurenceOrderPlugin()
-	] : []),
+		new webpack.EnvironmentPlugin({ NODE_ENV: ENV }),
+	]).concat(IS_DEV ? devPlugins : prodPlugins),
 
-	stats: { colors: true },
+	devtool: IS_DEV ? 'inline-source-map' : 'source-map',
 
-	node: {
-		global: true,
-		process: false,
-		Buffer: false,
-		__filename: false,
-		__dirname: false,
-		setImmediate: false
+	stats: IS_DEV ? 'errors-only' : {
+		hash: false,
+		version: false,
+		timings: false,
+		assets: true,
+		entrypoints: false,
+		chunks: false,
+		chunkModules: false,
+		modules: false,
+		reasons: false,
+		depth: false,
+		usedExports: false,
+		providedExports: false,
+		children: false,
+		source: false,
+		errors: true,
+		errorDetails: true,
+		warnings: true,
+		publicPath: false,
+		performance: false,
 	},
-
-	devtool: ENV==='production' ? 'source-map' : 'cheap-module-eval-source-map',
 
 	devServer: {
 		port: PORT,
 		host: '0.0.0.0',
-		colors: true,
 		stats: 'errors-only',
 		publicPath: '/',
 		contentBase: './src',
 		historyApiFallback: true,
-		proxy: {
-			// OPTIONAL: proxy configuration:
-			// '/optional-prefix/**': { // path pattern to rewrite
-			// 	target: 'http://target-host.com',
-			// 	pathRewrite: path => path.replace(/^\/[^\/]+\//, '')   // strip first path segment
-			// }
+		headers: {
+			'Access-Control-Allow-Origin': '*'
 		}
 	}
 };

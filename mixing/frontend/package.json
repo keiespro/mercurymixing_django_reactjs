@@ -6,91 +6,55 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --progress",
     "start": "superstatic build -p 8080 --host 0.0.0.0 --gzip -c '{\"rewrites\": [{\"source\":\"**\",\"destination\":\"index.html\"}],\"headers\":[{\"source\":\"**\",\"headers\":[{\"key\":\"Cache-Control\",\"value\":\"max-age=86400\"}]}]}'",
     "prestart": "npm run build",
-    "build": "cross-env NODE_ENV=production webpack -p --progress",
+    "build": "cross-env NODE_ENV=production webpack --progress --colors",
     "prebuild": "mkdirp build",
-    "test": "eslint app classic"
+    "test": "cross-env NODE_ENV=development eslint app classic"
   },
   "devDependencies": {
-    "autoprefixer": "^6.5.3",
-    "babel": "^6.5.2",
-    "babel-core": "^6.9.1",
-    "babel-eslint": "^7.1.1",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-plugin-transform-react-jsx": "^6.8.0",
-    "babel-preset-react-app": "^2.0.1",
-    "babel-register": "^6.18.0",
-    "chai": "^3.5.0",
-    "core-js": "^2.4.0",
-    "cross-env": "^1.0.8",
-    "css-loader": "^0.23.1",
-    "eslint": "^3.11.1",
-    "eslint-config-react-app": "^0.5.0",
-    "eslint-loader": "^1.6.1",
-    "eslint-plugin-flowtype": "^2.29.1",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^2.2.3",
-    "eslint-plugin-react": "^6.8.0",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "file-loader": "^0.8.5",
-    "json-loader": "^0.5.4",
-    "mkdirp": "^0.5.1",
-    "node-sass": "^3.13.0",
-    "postcss-loader": "^0.9.1",
-    "raw-loader": "^0.5.1",
-    "sass-loader": "^4.0.2",
-    "source-map-loader": "^0.1.5",
-    "style-loader": "^0.13.1",
-    "superstatic": "^4.0.2",
-    "url-loader": "^0.5.7",
-    "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "autoprefixer": "~7.1.1",
+    "babel": "~6.5.2",
+    "babel-core": "~6.9.1",
+    "babel-eslint": "~7.1.1",
+    "babel-loader": "~7.0.0",
+    "babel-plugin-transform-decorators-legacy": "~1.3.4",
+    "babel-plugin-transform-react-jsx": "~6.8.0",
+    "babel-preset-react-app": "~3.0.0",
+    "babel-register": "~6.18.0",
+    "chai": "~3.5.0",
+    "core-js": "~2.4.0",
+    "cross-env": "~5.0.0",
+    "css-loader": "~0.28.1",
+    "eslint": "~3.11.1",
+    "eslint-config-react-app": "~1.0.1",
+    "eslint-import-resolver-webpack": "~0.8.1",
+    "eslint-loader": "~1.6.1",
+    "eslint-plugin-flowtype": "~2.29.1",
+    "eslint-plugin-import": "~2.2.0",
+    "eslint-plugin-jsx-a11y": "~5.0.3",
+    "eslint-plugin-react": "~7.0.1",
+    "extract-text-webpack-plugin": "~2.1.0",
+    "file-loader": "~0.11.1",
+    "json-loader": "~0.5.4",
+    "mkdirp": "~0.5.1",
+    "node-sass": "~4.5.3",
+    "postcss-loader": "~2.0.5",
+    "raw-loader": "~0.5.1",
+    "sass-loader": "~6.0.5",
+    "source-map-loader": "~0.2.1",
+    "style-loader": "~0.17.0",
+    "superstatic": "~4.0.2",
+    "url-loader": "~0.5.7",
+    "webpack": "~2.5.1",
+    "webpack-dev-server": "~2.4.5"
   },
   "dependencies": {
     "js-cookie": "~2.1.3",
-    "preact": "~7.1.0",
-    "preact-compat": "~3.9.4",
-    "preact-redux": "~1.2.0",
-    "react-dropzone": "~3.9.1",
+    "preact": "~8.1.0",
+    "preact-compat": "~3.16.0",
+    "preact-redux": "~2.0.1",
+    "react-dropzone": "~3.13.1",
     "reduce-reducers": "~0.1.2",
     "redux": "~3.6.0",
-    "redux-thunk": "~2.1.0"
-  },
-  "babel": {
-    "presets": [
-      "react-app"
-    ],
-    "plugins": [
-      [
-        "transform-decorators-legacy"
-      ],
-      [
-        "transform-react-jsx",
-        {
-          "pragma": "h"
-        }
-      ]
-    ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "plugin:import/recommended"
-    ],
-    "rules": {
-      "indent": [
-        "error",
-        "tab",
-        {
-          "MemberExpression": 1
-        }
-      ],
-      "no-mixed-spaces-and-tabs": "error"
-    },
-    "settings": {
-      "react": {
-        "pragma": "h"
-      }
-    }
+    "redux-thunk": "~2.2.0"
   }
 }
