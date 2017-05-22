@@ -1,6 +1,10 @@
+/* stylelint-disable rscss/class-format */
+
 $padding: 1.5rem;
 
-*, *:before, *:after {
+*,
+*::before,
+*::after {
 	box-sizing: border-box;
 }
 
@@ -9,7 +13,10 @@ html {
 	font-size: 11pt;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
 	margin-bottom: $padding;
 	margin-top: 0;
 }
@@ -45,7 +52,7 @@ button.delete {
 	padding: 0;
 	width: 1.5rem;
 
-	&:before {
+	&::before {
 		content: "\00d7";
 		display: block;
 	}
@@ -70,8 +77,8 @@ button.delete {
 
 	> button {
 		position: absolute;
-		top: $padding;
 		right: $padding;
+		top: $padding;
 	}
 }
 
@@ -91,8 +98,8 @@ button.delete {
 .group {
 	border: solid 1px #ccc;
 	display: flex;
-	flex-direction: column;
 	flex: 1 0 (100% / 3.5);
+	flex-direction: column;
 	margin: 0 ($padding * 0.5) $padding;
 	min-width: 18rem;
 	padding: $padding;
@@ -100,8 +107,8 @@ button.delete {
 
 	> button {
 		position: absolute;
-		top: $padding;
 		right: $padding;
+		top: $padding;
 	}
 }
 
@@ -119,8 +126,8 @@ button.delete {
 
 	button.delete {
 		position: absolute;
-		top: 0;
 		right: 0;
+		top: 0;
 	}
 }
 
@@ -138,7 +145,8 @@ button.delete {
 }
 
 .add-comment {
-	textarea, input {
+	textarea,
+	input {
 		display: block;
 	}
 }
