@@ -45,7 +45,7 @@ module.exports = {
 
 	output: {
 		filename: '[name].js',
-		path: path.resolve(__dirname, '../static/build'),
+		path: path.resolve(__dirname, './build'),
 		publicPath: IS_DEV ? `http://localhost:${PORT}/` : '/',
 	},
 

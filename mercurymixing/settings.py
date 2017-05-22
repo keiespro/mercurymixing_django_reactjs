@@ -241,6 +241,8 @@ INSTALLED_APPS = (
     "django_cleanup",
     "private_storage",
     "rest_framework",
+    "theme",
+    "frontend",
     "mixing",
     "mixing.purchases",
     "mezzanine.boot",
