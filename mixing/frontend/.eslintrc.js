@@ -19,6 +19,7 @@ module.exports = {
 		'no-plusplus': 'off',
 		'arrow-parens': 'off',
 		'no-return-assign': 'off',
+		'no-underscore-dangle': 'off',
 
 		'react/jsx-indent': ['error', 'tab'],
 		'react/jsx-filename-extension': 'off',

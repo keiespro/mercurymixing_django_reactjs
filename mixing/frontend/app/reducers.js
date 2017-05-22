@@ -7,7 +7,7 @@ import songs from './songs/reducers';
 import tracks from './tracks/reducers';
 import comments from './comments/reducers';
 
-const dummyReducer = (state = {}, action) => state;
+const dummyReducer = (state = {}) => state;
 
 /**
  * Root reducer

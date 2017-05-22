@@ -58,16 +58,12 @@ export function fileSize(bytes) {
  * @return {any}             The nested property value or fallback
  */
 export function deepGet(obj, path, fallback) {
-	let current = obj;
-	for (const key of path.split('.')) {
-		if (current && key in current) {
-			current = current[key];
-		} else {
-			current = fallback;
-			break;
+	return path.split('.').reduce((nestedObject, key) => {
+		if (nestedObject && key in nestedObject) {
+			return nestedObject[key];
 		}
-	}
-	return current;
+		return fallback;
+	}, obj);
 }
 
 /**

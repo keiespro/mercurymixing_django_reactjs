@@ -16,10 +16,10 @@ import {
 export default function profileReducer(state = {}, action) {
 	const { tracks, groups, profile } = state;
 	let credit = profile.trackCredit;
-	let songId,
-		groupIds,
-		groupId,
-		orphanedTracks;
+	let songId;
+	let groupIds;
+	let groupId;
+	let orphanedTracks;
 
 	switch (action.type) {
 

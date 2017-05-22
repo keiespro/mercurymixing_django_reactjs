@@ -15,7 +15,7 @@ function TrackUploader({ group, profile, addTrack }) {
 	if (profile.trackCredit <= 0) {
 		return (
 			<div className="track-uploader disabled">
-				<strong>You're out of track credits</strong>
+				<strong>You&apos;re out of track credits</strong>
 				<a href={profile.purchaseUrl}>Get more credits</a>
 			</div>
 		);

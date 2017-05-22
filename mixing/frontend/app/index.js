@@ -6,7 +6,7 @@ import Project from './project/Project';
 // Hot reloading and dev tools
 if (module.hot) {
 	module.hot.accept();
-	require('preact/devtools');
+	require('preact/devtools'); // eslint-disable-line global-require
 }
 
 const rootNode = document.querySelector('#root');
