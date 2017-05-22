@@ -1,15 +1,15 @@
 import { h } from 'preact';
 import { connect } from 'preact-redux';
+import PropTypes from 'prop-types';
 import * as actions from './actions';
 import {
-	stateToProps, bindActions, getClassName, getStatus, deleteButton, filter
+	stateToProps, bindActions, getClassName, getStatus, deleteButton, filter,
 } from '../util';
 
 import Track from '../tracks/Track';
 import TrackUploader from '../tracks/TrackUploader';
 
-function Group(props) {
-	const { group, tracks, removeGroup } = props;
+function Group({ group, tracks, removeGroup }) {
 	const groupTracks = filter(tracks, 'group', group.id);
 
 	return (
@@ -25,4 +25,10 @@ function Group(props) {
 	);
 }
 
-export default connect(stateToProps('tracks'), bindActions(actions))(Group)
+Group.propTypes = {
+	group: PropTypes.object.isRequired,
+	tracks: PropTypes.arrayOf(PropTypes.object).isRequired,
+	removeGroup: PropTypes.func.isRequired,
+};
+
+export default connect(stateToProps('tracks'), bindActions(actions))(Group);

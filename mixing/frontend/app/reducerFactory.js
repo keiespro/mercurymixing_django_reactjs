@@ -10,9 +10,9 @@
  */
 export const onPostStart = (state, action) => {
 	const { key, payload } = action;
-	const request = {posting: true, progress: 0};
-	return [...state, {...payload, key, request}]
-}
+	const request = { posting: true, progress: 0 };
+	return [...state, { ...payload, key, request }];
+};
 
 /**
  * POST request 'success' reducer.
@@ -31,11 +31,11 @@ export const onPostSuccess = (state, action) => (
 			request: {
 				...instance.request,
 				posting: false,
-				progress: 1
-			}
+				progress: 1,
+			},
 		};
 	})
-)
+);
 
 /**
  * POST, PUT, and DELETE request 'error' reducer.
@@ -54,11 +54,11 @@ export const onPostError = (state, action) => (
 			request: {
 				...instance.request,
 				error: true,
-				errorResponse: action.response
-			}
+				errorResponse: action.response,
+			},
 		};
 	})
-)
+);
 
 /**
  * POST, PUT, and DELETE request 'progress' reducer.
@@ -75,9 +75,9 @@ export const onPostProgress = (state, action) => {
 		let progress = null;
 		if (instance.key !== action.key) return instance;
 		if (event.lengthComputable) progress = event.loaded / event.total;
-		return {...instance, request: {...instance.request, progress}};
+		return { ...instance, request: { ...instance.request, progress } };
 	});
-}
+};
 
 /**
  * POST, PUT, and DELETE request 'cancel' reducer.
@@ -92,10 +92,10 @@ export const onPostCancel = (state, action) => (
 		if (instance.key !== action.key) return instance;
 		return {
 			...instance,
-			request: {...instance.request, canceled: true}
+			request: { ...instance.request, canceled: true },
 		};
 	})
-)
+);
 
 /**
  * DELETE request 'start' reducer.
@@ -109,10 +109,10 @@ export const onDeleteStart = (state, action) => (
 		if (instance.key !== action.key) return instance;
 		return {
 			...instance,
-			request: {...instance.request, deleting: true, progress: 0}
+			request: { ...instance.request, deleting: true, progress: 0 },
 		};
 	})
-)
+);
 
 /**
  * DELETE request 'success' reducer.
@@ -123,7 +123,7 @@ export const onDeleteStart = (state, action) => (
  */
 export const onDeleteSuccess = (state, action) => (
 	state.filter(instance => instance.key !== action.key)
-)
+);
 
 /**
  * Reducer factory for REST API workflows.
@@ -133,23 +133,23 @@ export const onDeleteSuccess = (state, action) => (
  */
 export default function reducerFactory(PREFIX) {
 	const ACTIONS = {
-		[`${PREFIX}_POST_START`]:    onPostStart,
-		[`${PREFIX}_POST_SUCCESS`]:  onPostSuccess,
-		[`${PREFIX}_POST_ERROR`]:    onPostError,
+		[`${PREFIX}_POST_START`]: onPostStart,
+		[`${PREFIX}_POST_SUCCESS`]: onPostSuccess,
+		[`${PREFIX}_POST_ERROR`]: onPostError,
 		[`${PREFIX}_POST_PROGRESS`]: onPostProgress,
-		[`${PREFIX}_POST_CANCEL`]:   onPostCancel,
+		[`${PREFIX}_POST_CANCEL`]: onPostCancel,
 
-		[`${PREFIX}_DELETE_START`]:    onDeleteStart,
-		[`${PREFIX}_DELETE_SUCCESS`]:  onDeleteSuccess,
-		[`${PREFIX}_DELETE_ERROR`]:    onPostError,
+		[`${PREFIX}_DELETE_START`]: onDeleteStart,
+		[`${PREFIX}_DELETE_SUCCESS`]: onDeleteSuccess,
+		[`${PREFIX}_DELETE_ERROR`]: onPostError,
 		[`${PREFIX}_DELETE_PROGRESS`]: onPostProgress,
-		[`${PREFIX}_DELETE_CANCEL`]:   onPostCancel,
-	}
+		[`${PREFIX}_DELETE_CANCEL`]: onPostCancel,
+	};
 
-	return function objectBasedReducer(state=[], action) {
+	return function objectBasedReducer(state = [], action) {
 		if (action && ACTIONS[action.type]) {
-			return ACTIONS[action.type](state, action)
+			return ACTIONS[action.type](state, action);
 		}
 		return state;
-	}
+	};
 }

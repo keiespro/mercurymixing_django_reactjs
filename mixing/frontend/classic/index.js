@@ -4,7 +4,7 @@
 
 import '../style/main.scss';
 
-import payAndSubmit from './stripe-payment.js';
+import payAndSubmit from './stripe-payment';
 
 // Required for live reloading
 if (module.hot) module.hot.accept();

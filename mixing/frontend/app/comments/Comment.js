@@ -1,8 +1,8 @@
 import { h } from 'preact';
+import PropTypes from 'prop-types';
 import { getClassName, getStatus, fileSize } from '../util';
 
-function Comment(props) {
-	const { comment } = props;
+function Comment({ comment }) {
 	const file = comment.attachment;
 
 	const attachmentLink = () => {
@@ -13,7 +13,7 @@ function Comment(props) {
 				<span className="size">({fileSize(file.size)})</span>
 			</div>
 		);
-	}
+	};
 
 	return (
 		<section className={getClassName(comment, 'comment')}>
@@ -25,5 +25,9 @@ function Comment(props) {
 		</section>
 	);
 }
+
+Comment.propTypes = {
+	comment: PropTypes.object.isRequired,
+};
 
 export default Comment;

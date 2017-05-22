@@ -42,6 +42,7 @@
     "preact": "~8.1.0",
     "preact-compat": "~3.16.0",
     "preact-redux": "~2.0.1",
+    "prop-types": "^15.5.10",
     "react-dropzone": "~3.13.1",
     "reduce-reducers": "~0.1.2",
     "redux": "~3.6.0",

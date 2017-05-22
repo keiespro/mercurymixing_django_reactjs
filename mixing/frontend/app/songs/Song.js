@@ -1,15 +1,15 @@
 import { h } from 'preact';
 import { connect } from 'preact-redux';
+import PropTypes from 'prop-types';
 import * as actions from './actions';
 import {
-	stateToProps, bindActions, getClassName, getStatus, deleteButton, filter
+	stateToProps, bindActions, getClassName, getStatus, deleteButton, filter,
 } from '../util';
 
 import Group from '../groups/Group';
 import AddGroupForm from '../groups/AddGroupForm';
 
-function Song(props) {
-	const { song, groups, removeSong } = props;
+function Song({ song, groups, removeSong }) {
 	const songGroups = filter(groups, 'song', song.id);
 
 	return (
@@ -25,4 +25,10 @@ function Song(props) {
 	);
 }
 
-export default connect(stateToProps('groups'), bindActions(actions))(Song)
+Song.propTypes = {
+	song: PropTypes.object.isRequired,
+	groups: PropTypes.arrayOf(PropTypes.object).isRequired,
+	removeSong: PropTypes.func.isRequired,
+};
+
+export default connect(stateToProps('groups'), bindActions(actions))(Song);

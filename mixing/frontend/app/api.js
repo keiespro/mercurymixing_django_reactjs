@@ -59,33 +59,37 @@ function _api(url, method, payload, dispatch, START, SUCCESS, ERROR, PROGRESS, C
 		let response;
 		try {
 			response = JSON.parse(xhr.responseText || null);
-		} catch(e) {
-			response = {detail: 'Could not parse server response'};
+		} catch (e) {
+			response = { detail: 'Could not parse server response' };
 		}
 		if (xhr.status >= 200 && xhr.status < 300) {
-			if (SUCCESS) dispatch({type: SUCCESS, key, response});
-		} else {
-			if (ERROR) dispatch({type: ERROR, key, response});
-		}
+			if (SUCCESS) dispatch({ type: SUCCESS, key, response });
+		} else if (ERROR) dispatch({ type: ERROR, key, response });
 	};
 
 	// Async error handler (connection error)
-	if (ERROR) xhr.onerror = function apiError() {
-		dispatch({type: ERROR, key, response: null});
-	};
+	if (ERROR) {
+		xhr.onerror = function apiError() {
+			dispatch({ type: ERROR, key, response: null });
+		};
+	}
 
 	// Async progress handler
-	if (PROGRESS) xhr.upload.onprogress = function apiProgress(event) {
-		dispatch({type: PROGRESS, key, event});
+	if (PROGRESS) {
+		xhr.upload.onprogress = function apiProgress(event) {
+			dispatch({ type: PROGRESS, key, event });
+		};
 	}
 
 	// Async cancel handler
-	if (CANCEL) xhr.onabort = function apiCancel() {
-		dispatch({type: CANCEL, key});
+	if (CANCEL) {
+		xhr.onabort = function apiCancel() {
+			dispatch({ type: CANCEL, key });
+		};
 	}
 
 	// Dispatch the pre-request action
-	if (START) dispatch({type: START, payload: {...payload, xhr}, key});
+	if (START) dispatch({ type: START, payload: { ...payload, xhr }, key });
 
 	// Send the request to the server
 	xhr.send(data);
@@ -103,24 +107,24 @@ export default function api(url) {
 		// ...actions corresponds to all Redux actions accepted by _api()
 		get: function apiGet(payload, ...actions) {
 			if (!payload) payload = {};
-			return dispatch => _api(url, 'GET', payload, dispatch, ...actions)
+			return dispatch => _api(url, 'GET', payload, dispatch, ...actions);
 		},
 
 		patch: function apiPatch(payload, ...actions) {
-			return dispatch => _api(url, 'PATCH', payload, dispatch, ...actions)
+			return dispatch => _api(url, 'PATCH', payload, dispatch, ...actions);
 		},
 
 		post: function apiPost(payload, ...actions) {
-			return dispatch => _api(url, 'POST', payload, dispatch, ...actions)
+			return dispatch => _api(url, 'POST', payload, dispatch, ...actions);
 		},
 
 		put: function apiPut(payload, ...actions) {
-			return dispatch => _api(url, 'PUT', payload, dispatch, ...actions)
+			return dispatch => _api(url, 'PUT', payload, dispatch, ...actions);
 		},
 
 		delete: function apiDelete(payload, ...actions) {
-			return dispatch => _api(url, 'DELETE', payload, dispatch, ...actions)
-		}
-	}
+			return dispatch => _api(url, 'DELETE', payload, dispatch, ...actions);
+		},
+	};
 }
 

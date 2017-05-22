@@ -7,7 +7,7 @@ import Project from './project/Project';
 if (module.hot) {
 	module.hot.accept();
 	require('preact/devtools');
-};
+}
 
 const rootNode = document.querySelector('#root');
 

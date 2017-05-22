@@ -25,7 +25,7 @@ export function stateToProps(...keys) {
  */
 export function bindActions(actions) {
 	return dispatch => ({
-		...bindActionCreators(actions, dispatch)
+		...bindActionCreators(actions, dispatch),
 	});
 }
 
@@ -37,7 +37,7 @@ export function bindActions(actions) {
  */
 export function fileSize(bytes) {
 	const thresh = 1000;
-	const units = ['kB','MB','GB','TB','PB','EB','ZB','YB'];
+	const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 	let u = -1;
 
 	if (Math.abs(bytes) < thresh) return `${bytes} B`;
@@ -59,7 +59,7 @@ export function fileSize(bytes) {
  */
 export function deepGet(obj, path, fallback) {
 	let current = obj;
-	for (let key of path.split('.')) {
+	for (const key of path.split('.')) {
 		if (current && key in current) {
 			current = current[key];
 		} else {
@@ -92,7 +92,7 @@ export function filter(collection, key, ...values) {
  * @param  {string} base        The base class name that will be extended
  * @return {string}             The resulting class based on the request status
  */
-export function getClassName (obj, base) {
+export function getClassName(obj, base) {
 	if (!obj.request) return base || '';
 	const classes = [base];
 	['posting', 'deleting', 'canceled', 'error'].forEach(state => {
@@ -106,10 +106,12 @@ export function getClassName (obj, base) {
  * @param  {Object} obj.request A dictionary with the current request status
  * @return {string}             The resulting message based on the request status
  */
-export function getStatus (obj) {
+export function getStatus(obj) {
 	if (typeof obj.request === 'undefined') return null;
-	if (obj.request.error) return deepGet(
+	if (obj.request.error) {
+		return deepGet(
 		obj, 'request.errorResponse.detail', 'An error occurred');
+	}
 	if (obj.request.canceled) return 'Canceled';
 	if (obj.request.deleting) return 'Deleting...';
 	if (obj.request.posting) return 'Creating...';
@@ -123,7 +125,7 @@ export function getStatus (obj) {
  * @param  {function} removeFunc A function that will dispath the remove action
  * @return {jsx}                 The button that will fire the remove action
  */
-export function deleteButton (obj, removeFunc) {
+export function deleteButton(obj, removeFunc) {
 	const request = obj.request || {};
 	const nonDeletable = ['error', 'canceled', 'deleting', 'posting'];
 	const isTruthy = key => !!request[key];
@@ -133,7 +135,7 @@ export function deleteButton (obj, removeFunc) {
 		<button className="delete" onClick={() => removeFunc(obj)}>
 			<span>Delete</span>
 		</button>
-	)
+	);
 }
 
 /**
@@ -142,7 +144,7 @@ export function deleteButton (obj, removeFunc) {
  * @param  {String} selector A valid DOM selector string
  * @param  {String} content  The content that will be used to update the element
  */
-export function updateDOM (selector, content) {
+export function updateDOM(selector, content) {
 	const nodes = document.querySelectorAll(selector);
 	[].forEach.call(nodes, node => node.innerHTML = content);
 }

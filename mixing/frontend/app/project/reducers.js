@@ -4,7 +4,7 @@ import { SONG_DELETE_START, SONG_DELETE_ERROR } from '../songs/reducers';
 import { GROUP_DELETE_START, GROUP_DELETE_ERROR } from '../groups/reducers';
 import {
 	TRACK_POST_START, TRACK_POST_ERROR, TRACK_POST_CANCEL,
-	TRACK_DELETE_START, TRACK_DELETE_ERROR
+	TRACK_DELETE_START, TRACK_DELETE_ERROR,
 } from '../tracks/reducers';
 
 /**
@@ -13,10 +13,13 @@ import {
  * @param  {Object} action  Redux action
  * @return {Object}         New state with updated profile
  */
-export default function profileReducer (state={}, action) {
-	const { tracks, groups, profile } = state
+export default function profileReducer(state = {}, action) {
+	const { tracks, groups, profile } = state;
 	let credit = profile.trackCredit;
-	let songId, groupIds, groupId, orphanedTracks;
+	let songId,
+		groupIds,
+		groupId,
+		orphanedTracks;
 
 	switch (action.type) {
 
@@ -59,7 +62,7 @@ export default function profileReducer (state={}, action) {
 		...state,
 		profile: {
 			...profile,
-			trackCredit: credit
-		}
-	}
+			trackCredit: credit,
+		},
+	};
 }

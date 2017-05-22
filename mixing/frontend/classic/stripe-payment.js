@@ -30,6 +30,7 @@ export default function payAndSubmit(form, stripeConfig) {
 
 	// We can't do anything without StripeCheckout
 	if (typeof StripeCheckout === 'undefined') {
+		// eslint-disable-next-line no-alert
 		alert('Error: Could not connect to our payment processor.');
 		return;
 	}
@@ -55,6 +56,6 @@ export default function payAndSubmit(form, stripeConfig) {
 			if (!paymentComplete) {
 				form.classList.remove('working');
 			}
-		}
+		},
 	});
 }

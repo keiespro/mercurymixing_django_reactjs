@@ -22,6 +22,7 @@ module.exports = {
 
 		'react/jsx-indent': ['error', 'tab'],
 		'react/jsx-filename-extension': 'off',
+		'react/forbid-prop-types': 'off',
 	},
 	settings: {
 		react: {

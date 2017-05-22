@@ -5,7 +5,7 @@ import { getKey } from './api';
 import { updateDOM, deepGet } from './util';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const ENHANCERS = composeEnhancers(applyMiddleware(thunk))
+const ENHANCERS = composeEnhancers(applyMiddleware(thunk));
 
 const EMPTY = {
 	project: {},
@@ -13,7 +13,7 @@ const EMPTY = {
 	songs: [],
 	groups: [],
 	tracks: [],
-	comments: []
+	comments: [],
 };
 
 // window.initialState is populated by Django in mixing/project_detail.html
@@ -32,7 +32,7 @@ const INITIAL = window.initialState || EMPTY;
  * Callback to be executed when a Redux action is dispatched.
  * @param  {Object} state The Redux state object
  */
-function onActionDispatch (state) {
+function onActionDispatch(state) {
 	updateDOM('.track-credit-display', deepGet(state, 'profile.trackCredit'));
 }
 

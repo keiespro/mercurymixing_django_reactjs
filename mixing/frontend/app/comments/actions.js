@@ -1,16 +1,16 @@
 import api from '../api';
 
 import {
-	COMMENT_POST_START, COMMENT_POST_SUCCESS, COMMENT_POST_ERROR
+	COMMENT_POST_START, COMMENT_POST_SUCCESS, COMMENT_POST_ERROR,
 } from './reducers';
 
-export function addComment({ content, attachment, author, project }) {
+export default function addComment({ content, attachment, author, project }) {
 	const comment = {
 		project: project.id,
 		created: new Date(),
 		author,
-		content
-	}
+		content,
+	};
 
 	// The API will complain if the payload contains an empty `attachment` key,
 	// so we only add the key if it will have a value
