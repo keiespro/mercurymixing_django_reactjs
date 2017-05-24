@@ -4,7 +4,8 @@ import {
 	COMMENT_POST_START, COMMENT_POST_SUCCESS, COMMENT_POST_ERROR,
 } from './reducers';
 
-export default function addComment({ content, attachment, author, project }) {
+// eslint-disable-next-line import/prefer-default-export
+export function addComment({ content, attachment, author, project }) {
 	const comment = {
 		project: project.id,
 		created: new Date(),
